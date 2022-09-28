@@ -6,7 +6,12 @@
 
 #include "types.h"
 
-PROLOG_UNIVERSAL_TYPE * createPrologVariable(char * name) {
+#include "create-and-destroy.h"
+#include "evaluate.h"
+#include "string-builder.h"
+#include "substitution.h"
+
+/* PROLOG_UNIVERSAL_TYPE * createPrologVariable(char * name) {
 	return allocateStringAndCreateUniversalStruct(
 		prologType_Variable,
 		0,
@@ -16,7 +21,7 @@ PROLOG_UNIVERSAL_TYPE * createPrologVariable(char * name) {
 		NULL,
 		NULL
 	);
-}
+} */
 
 BOOL variableEquals(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSAL_TYPE * other) {
 	return other->type == prologType_Variable && !strcmp(this->name, other->name);
@@ -38,19 +43,20 @@ PROLOG_SUBSTITUTION * unifyVariable(PROLOG_VARIABLE * this, PROLOG_EXPRESSION * 
 
 	if (
 		equals(this, otherExpr) ||
-		isNonBinding(this) ||
+		isVariableNonBinding(this) ||
 		// 2014/03/13 : Don't add the binding { X = _ } to any substitution.
 		// But what about a binding such as { X = foo(_) } ?
-		(otherExpr->type == prologType_Variable && isNonBinding(otherExpr))
+		(otherExpr->type == prologType_Variable && isVariableNonBinding(otherExpr))
 	) {
-		return createEmptySubstitution();
+		return NULL; /* I.e. createEmptySubstitution(); */
 	} else if (containsVariable(otherExpr, this)) {
 		// console.log('PrologVariable.Unify(): Returning undefined');
 
 		// This is the "occurs" check.
 		return NULL; // This PrologVariable and the IPrologExpression are not unifiable.
 	} else {
-		return createSubstitution(this->name, otherExpr);
+		/* return createSubstitution(this->name, otherExpr); */
+		return createNameValueListElement(this->name, otherExpr, NULL);
 	}
 }
 

@@ -41,6 +41,11 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 /* Substitution = associative array? */
 #define PROLOG_SUBSTITUTION PROLOG_NAME_VALUE_LIST_ELEMENT
 
+#define getValueInNameValueListElement(nvle) ((nvle)->value1)
+
+#define getBufferSizeIncrementInStringBuilder(sb) ((sb)->integerValue)
+#define getStringInStringBuilder(sb) ((sb)->name)
+
 enum {
 	prologType_Variable,
 	prologType_Substitution,

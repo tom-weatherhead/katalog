@@ -6,6 +6,12 @@
 
 #include "types.h"
 
+#include "create-and-destroy.h"
+#include "evaluate.h"
+#include "string-builder.h"
+#include "substitution.h"
+#include "variable.h"
+
 /* public get length(): number {
 	return this.SubstitutionList.size;
 }
@@ -49,7 +55,7 @@ BOOL substitutionContainsVariableName(PROLOG_SUBSTITUTION * this, char * name) {
 PROLOG_EXPRESSION * lookupValueInSubstitutionList(char * name, PROLOG_SUBSTITUTION * sub) {
 	PROLOG_SUBSTITUTION * ptr;
 
-	for (ptr = this; ptr != NULL; ptr = ptr->next) {
+	for (ptr = sub; ptr != NULL; ptr = ptr->next) {
 
 		if (!strcmp(ptr->name, name)) {
 			return getValueInNameValueListElement(ptr);
@@ -106,7 +112,7 @@ PROLOG_SUBSTITUTION * compose(PROLOG_SUBSTITUTION * this, PROLOG_SUBSTITUTION * 
 		newSub.SubstitutionList.delete(v);
 	} */
 
-	PROLOG_SUBSTITUTION * pp = &newSub;
+	PROLOG_SUBSTITUTION ** pp = &newSub;
 
 	for (ptr = newSub; ptr != NULL;) {
 		PROLOG_EXPRESSION * value = getValueInNameValueListElement(ptr);

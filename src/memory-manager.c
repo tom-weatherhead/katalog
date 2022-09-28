@@ -1,4 +1,4 @@
-/* atrocity/src/memory-manager.c */
+/* katalog/src/memory-manager.c */
 
 /* A mark-and-sweep garbage collector. */
 
@@ -12,18 +12,18 @@
 
 /* External constants / variables */
 
-extern LISP_VALUE * globalNullValue;
-extern LISP_VALUE * globalTrueValue;
+/* extern LISP_VALUE * globalNullValue;
+extern LISP_VALUE * globalTrueValue; */
 
 /* Local constants / variables */
 
 static int numMallocs = 0;
 static int numFrees = 0;
 
-static void setMarksInExprTree(SCHEME_UNIVERSAL_TYPE * expr);
+static void setMarksInExprTree(PROLOG_UNIVERSAL_TYPE * expr);
 
 typedef struct MEMMGR_RECORD_STRUCT {
-	SCHEME_UNIVERSAL_TYPE * item;
+	PROLOG_UNIVERSAL_TYPE * item;
 	struct MEMMGR_RECORD_STRUCT * next;
 } MEMMGR_RECORD;
 
@@ -61,7 +61,7 @@ void mmPrintReport() {
 	}
 }
 
-void addItemToMemMgrRecords(SCHEME_UNIVERSAL_TYPE * item) {
+void addItemToMemMgrRecords(PROLOG_UNIVERSAL_TYPE * item) {
 	MEMMGR_RECORD * mmRec = NULL;
 
 	mmRec = (MEMMGR_RECORD *)mmAlloc(sizeof(MEMMGR_RECORD));
@@ -90,14 +90,14 @@ static void clearMarks() {
 	}
 }
 
-static void setMarksInAA(int n, SCHEME_UNIVERSAL_TYPE ** aux) {
+/* static void setMarksInAA(int n, PROLOG_UNIVERSAL_TYPE ** aux) {
 
 	while (n-- > 0) {
 		setMarksInExprTree(aux[n]);
 	}
-}
+} */
 
-static void setMarksInExprTree(SCHEME_UNIVERSAL_TYPE * expr) {
+static void setMarksInExprTree(PROLOG_UNIVERSAL_TYPE * expr) {
 
 	if (expr == NULL || expr->mark == 1) {
 		return;
@@ -113,9 +113,9 @@ static void setMarksInExprTree(SCHEME_UNIVERSAL_TYPE * expr) {
 	setMarksInExprTree(expr->value3);
 	setMarksInExprTree(expr->next);
 
-	if (expr->type == lispValueType_AssociativeArray) {
-		setMarksInAA(expr->integerValue, (SCHEME_UNIVERSAL_TYPE **)expr->aux);
-	}
+	/* if (expr->type == lispValueType_AssociativeArray) {
+		setMarksInAA(expr->integerValue, (PROLOG_UNIVERSAL_TYPE **)expr->aux);
+	} */
 }
 
 static int freeUnmarkedStructs() {
@@ -152,7 +152,7 @@ static int freeUnmarkedStructs() {
 	return numFreed;
 }
 
-int collectGarbage(SCHEME_UNIVERSAL_TYPE * exprTreesToMark[]) {
+int collectGarbage(PROLOG_UNIVERSAL_TYPE * exprTreesToMark[]) {
 	int i;
 
 	clearMarks();
@@ -165,8 +165,8 @@ int collectGarbage(SCHEME_UNIVERSAL_TYPE * exprTreesToMark[]) {
 }
 
 int freeAllStructs() {
-	globalNullValue = NULL;
-	globalTrueValue = NULL;
+	/* globalNullValue = NULL;
+	globalTrueValue = NULL; */
 	clearMarks();
 
 	return freeUnmarkedStructs();

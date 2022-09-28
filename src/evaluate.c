@@ -6,6 +6,8 @@
 
 #include "types.h"
 
+#include "create-and-destroy.h"
+#include "string-builder.h"
 #include "substitution.h"
 #include "variable.h"
 

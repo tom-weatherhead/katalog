@@ -1,4 +1,4 @@
-/* atrocity/src/create-and-destroy.c */
+/* katalog/src/create-and-destroy.c */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,22 +8,22 @@
 
 #include "create-and-destroy.h"
 #include "memory-manager.h"
-#include "utilities.h"
+/* #include "utilities.h" */
 
 const int defaultStringValueLength = 16;
 
-/* BEGIN SCHEME_UNIVERSAL_TYPE */
+/* BEGIN PROLOG_UNIVERSAL_TYPE */
 
-static SCHEME_UNIVERSAL_TYPE * createUniversalStruct(
+static PROLOG_UNIVERSAL_TYPE * createUniversalStruct(
 	int type,
 	int integerValue,
 	int maxNameLength,
 	char * name,
-	SCHEME_UNIVERSAL_TYPE * value1,
-	SCHEME_UNIVERSAL_TYPE * value2,
-	SCHEME_UNIVERSAL_TYPE * next
+	PROLOG_UNIVERSAL_TYPE * value1,
+	PROLOG_UNIVERSAL_TYPE * value2,
+	PROLOG_UNIVERSAL_TYPE * next
 ) {
-	SCHEME_UNIVERSAL_TYPE * result = (SCHEME_UNIVERSAL_TYPE *)mmAlloc(sizeof(SCHEME_UNIVERSAL_TYPE));
+	PROLOG_UNIVERSAL_TYPE * result = (PROLOG_UNIVERSAL_TYPE *)mmAlloc(sizeof(PROLOG_UNIVERSAL_TYPE));
 
 	result->mark = 0;
 	result->type = type;
@@ -45,14 +45,14 @@ static SCHEME_UNIVERSAL_TYPE * createUniversalStruct(
 /* If name == NULL and maxNameLength > 1 then mmAlloc(maxNameLength * sizeof(char)) and zero-fill it */
 /* If name == NULL and maxNameLength <= 0 then set maxNameLength = the default maxStringValueLength; then mmAlloc and zero-fill */
 
-static SCHEME_UNIVERSAL_TYPE * allocateStringAndCreateUniversalStruct(
+static PROLOG_UNIVERSAL_TYPE * allocateStringAndCreateUniversalStruct(
 	int type,
 	int integerValue,
 	int maxNameLength,
 	char * name,
-	SCHEME_UNIVERSAL_TYPE * value1,
-	SCHEME_UNIVERSAL_TYPE * value2,
-	SCHEME_UNIVERSAL_TYPE * next
+	PROLOG_UNIVERSAL_TYPE * value1,
+	PROLOG_UNIVERSAL_TYPE * value2,
+	PROLOG_UNIVERSAL_TYPE * next
 ) {
 
 	if (name != NULL) {
@@ -77,7 +77,7 @@ static SCHEME_UNIVERSAL_TYPE * allocateStringAndCreateUniversalStruct(
 	return createUniversalStruct(type, integerValue, maxNameLength, buf, value1, value2, next);
 }
 
-void freeUniversalStruct(SCHEME_UNIVERSAL_TYPE * expr) {
+void freeUniversalStruct(PROLOG_UNIVERSAL_TYPE * expr) {
 
 	if (expr->name != NULL) {
 		mmFree(expr->name);
@@ -112,11 +112,11 @@ void freeUniversalStruct(SCHEME_UNIVERSAL_TYPE * expr) {
 	mmFree(expr);
 }
 
-/* END SCHEME_UNIVERSAL_TYPE */
+/* END PROLOG_UNIVERSAL_TYPE */
 
 /* **** Value struct creation functions **** */
 
-LISP_VALUE * createNumericValue(int value) {
+/* LISP_VALUE * createNumericValue(int value) {
 	return createUniversalStruct(
 		lispValueType_Number,
 		value,
@@ -140,7 +140,7 @@ LISP_VALUE * createStringValue(char * str) {
 		--len;
 	}
 
-	SCHEME_UNIVERSAL_TYPE * result = allocateStringAndCreateUniversalStruct(
+	PROLOG_UNIVERSAL_TYPE * result = allocateStringAndCreateUniversalStruct(
 		lispValueType_String,
 		0,
 		0,
@@ -150,7 +150,7 @@ LISP_VALUE * createStringValue(char * str) {
 		NULL
 	);
 
-	result->name[len] = '\0'; /* Overwrite any closing double-quote */
+	result->name[len] = '\0'; / * Overwrite any closing double-quote * /
 
 	return result;
 }
@@ -180,7 +180,7 @@ LISP_VALUE * createPrimitiveOperator(char * value) {
 }
 
 LISP_VALUE * createClosure(LISP_VAR_LIST_ELEMENT * args, LISP_EXPR * body, LISP_ENV * env) {
-	SCHEME_UNIVERSAL_TYPE * closure = createUniversalStruct(
+	PROLOG_UNIVERSAL_TYPE * closure = createUniversalStruct(
 		lispValueType_Closure,
 		0,
 		0,
@@ -190,7 +190,7 @@ LISP_VALUE * createClosure(LISP_VAR_LIST_ELEMENT * args, LISP_EXPR * body, LISP_
 		NULL
 	);
 
-	getBodyInClosure(closure) = body; /* I.e. closure->value3 = body; */
+	getBodyInClosure(closure) = body; / * I.e. closure->value3 = body; * /
 
 	return closure;
 }
@@ -208,7 +208,7 @@ LISP_VALUE * createPair(LISP_VALUE * head, LISP_VALUE * tail) {
 }
 
 LISP_VALUE * createNull() {
-	/* TODO: Just return NULL; */
+	/ * TODO: Just return NULL; * /
 
 	return createUniversalStruct(
 		lispValueType_Null,
@@ -243,7 +243,7 @@ LISP_VALUE * createQuoteQuotedValueFromValue(LISP_VALUE * value) {
 		NULL,
 		NULL
 	);
-}
+} */
 
 /* TODO:
 A thunk is a suspended computation; used to implement lazy evaluation in SASL.
@@ -262,7 +262,7 @@ LISP_VALUE * createThunk(LISP_EXPR * body, LISP_ENV * env) {
 }
 */
 
-LISP_VALUE * createContinuation(int id) {
+/* LISP_VALUE * createContinuation(int id) {
 	return createUniversalStruct(
 		lispPseudoValueType_Continuation,
 		id,
@@ -363,11 +363,11 @@ LISP_EXPR_LIST_ELEMENT * createExpressionListElement(LISP_EXPR * expr, LISP_EXPR
 		NULL,
 		next
 	);
-}
+} */
 
 /* A variable is an Expression but not a Value. */
 
-LISP_VAR * createVariable(char * name) {
+PROLOG_VARIABLE * createVariable(char * name) {
 
 	/* Ensure that name does not contain ( or ) */
 	if (strchr(name, '(') != NULL || strchr(name, ')')) {
@@ -376,7 +376,7 @@ LISP_VAR * createVariable(char * name) {
 	}
 
 	return allocateStringAndCreateUniversalStruct(
-		lispExpressionType_Variable,
+		prologType_Variable,
 		0,
 		0,
 		name,
@@ -386,7 +386,7 @@ LISP_VAR * createVariable(char * name) {
 	);
 }
 
-LISP_EXPR * createExpressionFromVariable(LISP_VAR * var) {
+/* LISP_EXPR * createExpressionFromVariable(LISP_VAR * var) {
 	return createUniversalStruct(
 		lispExpressionType_Variable,
 		0,
@@ -408,11 +408,23 @@ LISP_VALUE_LIST_ELEMENT * createValueListElement(LISP_VALUE * value, LISP_VALUE_
 		NULL,
 		next
 	);
+} */
+
+PROLOG_NAME_LIST_ELEMENT * createNameListElement(char * name, PROLOG_NAME_LIST_ELEMENT * next) {
+	return allocateStringAndCreateUniversalStruct(
+		prologType_NameListElement,
+		0,
+		0,
+		name,
+		NULL,
+		NULL,
+		next
+	);
 }
 
-LISP_NAME_VALUE_LIST_ELEMENT * createNameValueListElement(char * name, LISP_VALUE * value, LISP_NAME_VALUE_LIST_ELEMENT * next) {
+PROLOG_NAME_VALUE_LIST_ELEMENT * createNameValueListElement(char * name, PROLOG_EXPRESSION * value, PROLOG_NAME_VALUE_LIST_ELEMENT * next) {
 	return allocateStringAndCreateUniversalStruct(
-		schemeStructType_NameValueListElement,
+		prologType_NameValueListElement,
 		0,
 		0,
 		name,
@@ -422,7 +434,7 @@ LISP_NAME_VALUE_LIST_ELEMENT * createNameValueListElement(char * name, LISP_VALU
 	);
 }
 
-LISP_ENV * createEnvironment(LISP_ENV * next) {
+/* LISP_ENV * createEnvironment(LISP_ENV * next) {
 	return createUniversalStruct(
 		schemeStructType_Environment,
 		0,
@@ -518,7 +530,7 @@ LISP_EXPR * createDefineMacroExpression(char * dstBuf, LISP_VAR_LIST_ELEMENT * a
 	);
 }
 
-SCHEME_UNIVERSAL_TYPE * createMacroListElement(LISP_EXPR * macro, SCHEME_UNIVERSAL_TYPE * macroList) {
+PROLOG_UNIVERSAL_TYPE * createMacroListElement(LISP_EXPR * macro, PROLOG_UNIVERSAL_TYPE * macroList) {
 	failIf(macro->type != lispExpressionType_Macro, "createMacroListElement() : Macro is not a macro");
 
 	return createUniversalStruct(
@@ -530,9 +542,9 @@ SCHEME_UNIVERSAL_TYPE * createMacroListElement(LISP_EXPR * macro, SCHEME_UNIVERS
 		NULL,
 		macroList
 	);
-}
+} */
 
-LISP_VALUE * createArray() {
+/* LISP_VALUE * createArray() {
 	return createUniversalStruct(
 		lispValueType_Array,
 		0,
@@ -544,7 +556,7 @@ LISP_VALUE * createArray() {
 	);
 }
 
-SCHEME_UNIVERSAL_TYPE * createArrayListElement(LISP_VALUE * value, SCHEME_UNIVERSAL_TYPE * next) {
+PROLOG_UNIVERSAL_TYPE * createArrayListElement(LISP_VALUE * value, PROLOG_UNIVERSAL_TYPE * next) {
 	return createUniversalStruct(
 		schemeStructType_ArrayListElement,
 		0,
@@ -567,14 +579,14 @@ LISP_VALUE * createAssociativeArrayEx(int numBuckets) {
 		NULL
 	);
 
-	result->aux = (SCHEME_UNIVERSAL_TYPE **)mmAlloc(numBuckets * sizeof(SCHEME_UNIVERSAL_TYPE *));
+	result->aux = (PROLOG_UNIVERSAL_TYPE **)mmAlloc(numBuckets * sizeof(PROLOG_UNIVERSAL_TYPE *));
 
-	memset(result->aux, 0, numBuckets * sizeof(SCHEME_UNIVERSAL_TYPE *));
+	memset(result->aux, 0, numBuckets * sizeof(PROLOG_UNIVERSAL_TYPE *));
 
 	return result;
 }
 
-SCHEME_UNIVERSAL_TYPE * createAssociativeArrayListElement(LISP_VALUE * key, LISP_VALUE * value, SCHEME_UNIVERSAL_TYPE * next) {
+PROLOG_UNIVERSAL_TYPE * createAssociativeArrayListElement(LISP_VALUE * key, LISP_VALUE * value, PROLOG_UNIVERSAL_TYPE * next) {
 	return createUniversalStruct(
 		schemeStructType_AssociativeArrayListElement,
 		0,
@@ -584,13 +596,13 @@ SCHEME_UNIVERSAL_TYPE * createAssociativeArrayListElement(LISP_VALUE * key, LISP
 		value,
 		next
 	);
-}
+} */
 
 STRING_BUILDER_TYPE * createStringBuilder(int bufIncSize) {
 	const int defaultBufferIncrementSize = 16;
 
 	STRING_BUILDER_TYPE * result = createUniversalStruct(
-		stringBuilderType,
+		prologType_StringBuilder,
 		(bufIncSize > 0) ? bufIncSize : defaultBufferIncrementSize,
 		0,
 		NULL,
