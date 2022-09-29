@@ -1,4 +1,4 @@
-/* atrocity/src/utilities.c */
+/* katalog/src/utilities.c */
 
 #include <stdlib.h>
 #include <stdio.h>
