@@ -25,44 +25,6 @@
 
 static PROLOG_FUNCTOR * parseFunctor(CharSource * cs);
 
-/* Parse an expression */
-
-/* static PROLOG_EXPRESSION * parseExpression(CharSource * cs) {
-	if idStartingWithLowerCaseLetter then create functor (for now, don't allow parameters on functors)
-	else if idStartingWithUpperCaseLetter then create variable
-	else error
-}
-
-static PROLOG_EXPRESSION_LIST_ELEMENT * parseBracketedExpressionListTail(CharSource * cs) {
-	if ")" then return NULL;
-
-	consume ","
-
-	expr = parseExpression(cs);
-	next = parseBracketedExpressionListTail(cs);
-
-	return createExpressionListElement(expr, next);
-}
-
-static PROLOG_EXPRESSION_LIST_ELEMENT * parseBracketedExpressionList(CharSource * cs) {
-
-	if (!consume("(")) {
-		return NULL;
-	}
-
-	expr = parseExpression(cs);
-	next = parseBracketedExpressionListTail(cs);
-
-	return createExpressionListElement(expr, next);
-}
-
-static PROLOG_EXPRESSION * parseFunctor(CharSource * cs) {
-	goalName = getLowerCaseId(cs);
-	argList = parseBracketedExpressionList(cs);
-
-	return createFunctor(goalName, argList);
-} */
-
 /* A goal is: id ( goal-arg-list ) */
 /* id must begin with a lower-case letter */
 /* goal-arg-list either is empty (i.e. followed by a ')')
@@ -173,7 +135,7 @@ static PROLOG_FUNCTOR * parseFunctor(CharSource * cs) {
 	}
 
 	char * functorName = sb->name;
-	printf("parseFunctor() : functorName is '%s'\n", functorName);
+	/* printf("parseFunctor() : functorName is '%s'\n", functorName); */
 	PROLOG_EXPRESSION_LIST_ELEMENT * argList = parseBracketedExpressionList(cs);
 
 	return createFunctor(functorName, argList);
@@ -191,7 +153,7 @@ static PROLOG_GOAL * parseGoal(CharSource * cs) {
 	}
 
 	char * goalName = sb->name;
-	printf("parseGoal() : goalName is '%s'\n", goalName);
+	/* printf("parseGoal() : goalName is '%s'\n", goalName); */
 	PROLOG_EXPRESSION_LIST_ELEMENT * argList = parseBracketedExpressionList(cs);
 
 	return createGoal(goalName, argList);
@@ -244,12 +206,9 @@ static PROLOG_EXPRESSION * parseClauseTail(CharSource * cs) {
 /* A clause tail is :- followed by a non-empty goal list, concluded by a dot. */
 
 static PROLOG_EXPRESSION * parseClause(CharSource * cs) {
-	printf("parseClause: parseGoal\n");
 	PROLOG_GOAL * head = parseGoal(cs);
-	printf("parseClause: parseClauseTail\n");
 	PROLOG_GOAL_LIST_ELEMENT * tail = parseClauseTail(cs);
 
-	printf("parseClause: createClause\n");
 	return createClause(head, tail);
 }
 
@@ -260,8 +219,6 @@ static PROLOG_GOAL_LIST_ELEMENT * parseQuery(CharSource * cs) {
 }
 
 PROLOG_INPUT * parseInput(CharSource * cs) {
-	printf("parseInput begin\n");
-
 	const int rewindPoint = cs->i;
 	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
 
@@ -273,9 +230,7 @@ PROLOG_INPUT * parseInput(CharSource * cs) {
 	if (!strcmp(sb->name, "?-")) {
 		return parseQuery(cs);
 	} else {
-		printf("parseInput: rewindPoint is %d\n", rewindPoint);
 		cs->i = rewindPoint; /* Rewind the CharSource to un-read the identifier we just read */
-		printf("parseInput: parseClause\n");
 		return parseClause(cs);
 	}
 }

@@ -11,6 +11,7 @@
 #include "evaluate.h"
 #include "memory-manager.h"
 #include "parser.h"
+#include "print.h"
 
 static PROLOG_CLAUSE_LIST_ELEMENT * knowledgeBase = NULL;
 
@@ -24,6 +25,12 @@ PROLOG_INPUT * processInput(char * str) {
 
 	failIf(parseTree == NULL, "processInput() : parseTree == NULL");
 	failIf(parseTree->type != prologType_Clause && parseTree->type != prologType_GoalListElement, "processInput() : parseTree is neither a clause nor a list of goals");
+
+	STRING_BUILDER_TYPE * sb = printExpressionToStringBuilder(NULL, parseTree);
+
+	printf("parseTree as string: '%s'\n", getStringInStringBuilder(sb));
+
+	failIf(strcmp(getStringInStringBuilder(sb), str), "processInput: Parsed string differs from input.");
 
 	if (parseTree->type == prologType_Clause) {
 		printf("Adding clause to knowledge base...\n");

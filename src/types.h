@@ -49,10 +49,20 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 /* Substitution = associative array? */
 #define PROLOG_SUBSTITUTION PROLOG_NAME_VALUE_LIST_ELEMENT
 
+#define getHeadInClause(c) ((c)->value1)
+#define getTailInClause(c) ((c)->value2)
+
+#define getArgumentsInFunctorOrGoal(fg) ((fg)->value1)
+
+#define getGoalInGoalListElement(gle) ((gle)->value1)
+
 #define getValueInNameValueListElement(nvle) ((nvle)->value1)
 
 #define getBufferSizeIncrementInStringBuilder(sb) ((sb)->integerValue)
 #define getStringInStringBuilder(sb) ((sb)->name)
+
+#define getIntegerValueInValue(v) ((v)->integerValue)
+#define getNameInValue(v) ((v)->name)
 
 enum {
 	prologType_Variable,
