@@ -17,9 +17,7 @@
 
 #include "types.h"
 
-static void runTests() {
-	printf("TODO: Implement tests\n");
-}
+#include "tests.h"
 
 /* **** The Main MoFo **** */
 

@@ -33,9 +33,11 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 } PROLOG_UNIVERSAL_TYPE;
 
 #define PROLOG_CLAUSE PROLOG_UNIVERSAL_TYPE
+#define PROLOG_CLAUSE_LIST_ELEMENT PROLOG_UNIVERSAL_TYPE
 #define PROLOG_EXPRESSION PROLOG_UNIVERSAL_TYPE
 #define PROLOG_EXPRESSION_LIST_ELEMENT PROLOG_UNIVERSAL_TYPE
 #define PROLOG_GOAL PROLOG_UNIVERSAL_TYPE
+#define PROLOG_GOAL_LIST_ELEMENT PROLOG_UNIVERSAL_TYPE
 #define PROLOG_INPUT PROLOG_UNIVERSAL_TYPE
 #define PROLOG_NAME_LIST_ELEMENT PROLOG_UNIVERSAL_TYPE
 #define PROLOG_NAME_VALUE_LIST_ELEMENT PROLOG_UNIVERSAL_TYPE
@@ -58,6 +60,9 @@ enum {
 	/* prologType_, */
 	prologType_StringBuilder,
 
+	prologType_ClauseListElement,
+	prologType_ExpressionListElement,
+	prologType_GoalListElement, /* I.e. Set<Variable> */
 	prologType_NameListElement, /* I.e. Set<Variable> */
 	prologType_NameValueListElement = prologType_Substitution
 };

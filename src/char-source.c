@@ -69,7 +69,7 @@ static void skipWhiteSpace(CharSource * cs) {
 	}
 }
 
-STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb, BOOL * pIsSingleQuoted) {
+STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 
 	if (sb == NULL) {
 		sb = createStringBuilder(0);
@@ -85,23 +85,11 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb, B
 	BOOL isSingleQuoted = FALSE;
 
 	switch (firstChar) {
+		case '.':
 		case '(':
 		case ')':
 		/* case '\'': */
 			/* printf("getIdentifier() : ( or ) : appendCharToStringBuilder...\n"); */
-			appendCharToStringBuilder(sb, firstChar);
-			cs->i++;
-			return sb;
-
-		case '\'':
-			isSingleQuoted = TRUE;
-
-			if (pIsSingleQuoted == NULL) {
-				fatalError("getIdentifier() found a single quote, but cannot notify caller");
-			}
-
-			*pIsSingleQuoted = TRUE;
-			/* printf("getIdentifier() : ' : appendCharToStringBuilder...\n"); */
 			appendCharToStringBuilder(sb, firstChar);
 			cs->i++;
 			return sb;
@@ -135,7 +123,7 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb, B
 				++cs->i;
 				break;
 			}
-		} else if (isspace(c) || c == '(' || c == ')' /* || c == '\0' */) {
+		} else if (isspace(c) || c == '.' || c == '(' || c == ')' /* || c == '\0' */) {
 			break;
 		}
 
@@ -158,7 +146,7 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb, B
 }
 
 BOOL consumeStr(CharSource * cs, char * str) {
-	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL, NULL);
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
 
 	if (isStringBuilderEmpty(sb)) {
 		fprintf(stderr, "consumeStr() : Error : Expected '%s', found EOF\n", str);

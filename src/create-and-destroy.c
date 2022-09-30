@@ -616,4 +616,52 @@ STRING_BUILDER_TYPE * createStringBuilder(int bufIncSize) {
 	return result;
 }
 
+PROLOG_GOAL * createGoal(char * name, PROLOG_EXPRESSION_LIST_ELEMENT * args) {
+	return createUniversalStruct(
+		prologType_Goal,
+		0,
+		0,
+		name,
+		args,
+		NULL,
+		NULL
+	);
+}
+
+PROLOG_GOAL_LIST_ELEMENT * createGoalListElement(PROLOG_GOAL * goal, PROLOG_GOAL_LIST_ELEMENT * next) {
+	return createUniversalStruct(
+		prologType_GoalListElement,
+		0,
+		0,
+		NULL,
+		goal,
+		NULL,
+		next
+	);
+}
+
+PROLOG_CLAUSE * createClause(PROLOG_GOAL * head, PROLOG_GOAL_LIST_ELEMENT * tail) {
+	return createUniversalStruct(
+		prologType_Clause,
+		0,
+		0,
+		NULL,
+		head,
+		tail,
+		NULL
+	);
+}
+
+PROLOG_CLAUSE_LIST_ELEMENT * createClauseListElement(PROLOG_CLAUSE * clause, PROLOG_CLAUSE_LIST_ELEMENT * next) {
+	return createUniversalStruct(
+		prologType_ClauseListElement,
+		0,
+		0,
+		NULL,
+		clause,
+		NULL,
+		next
+	);
+}
+
 /* **** The End **** */

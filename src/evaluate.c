@@ -128,4 +128,64 @@ BOOL isGround(PROLOG_UNIVERSAL_TYPE * this) {
 	}
 }
 
+/*
+C# :
+
+private ProveGoalList(
+	goalList: PrologGoal[],
+	cutDetectorList: CutDetector[],
+	goalNum: number,
+	oldSubstitution: ISubstitution,
+	parentVariablesToAvoid: IImmutableSet<IPrologVariable>,
+	variablesInQuery: IPrologVariable[], // Print these variables and their values automatically upon success if there is no print() goal at the end
+	listOfCurrentModules: PrologModule[]
+): ISubstitution | undefined {
+	if (goalNum >= goalList.length) {
+		// The goal list has been satisfied.
+
+		// console.log(
+		// 	`ProveGoalList() : The goal list of length ${goalList.length} has been satisfied`
+		// );
+		// console.log(
+		// 	'ProveGoalList() : Found solution:',
+		// 	oldSubstitution.toString()
+		// );
+		// this.printDirect(
+		// 	`ProveGoalList() : Found solution: ${oldSubstitution}`
+		// );
+
+		// **** Begin automatic printing ****
+		// const lastGoal =
+		// 	goalList.length > 0 ? goalList[goalList.length - 1] : undefined;
+
+		// if (
+		// 	typeof lastGoal !== 'undefined' &&
+		// 	lastGoal.Name !== 'print'
+		// ) {
+		// 	// Don't do automatic printing if the last goal was a print() goal.
+		this.AutomaticPrint(variablesInQuery, oldSubstitution);
+		this.numSolutionsFound++;
+		// }
+
+		// **** End automatic printing ****
+
+		// To continue searching for other solutions (i.e. if we are operating in "all" mode rather than "first" mode), return null.
+
+		if (this.allMode) {
+			return undefined;
+		}
+
+		return oldSubstitution;
+	}
+
+	...
+}
+*/
+
+PROLOG_SUBSTITUTION * proveGoalList(PROLOG_GOAL_LIST_ELEMENT * goalList) {
+	printf("TODO: Implement proveGoalList()\n");
+
+	return NULL;
+}
+
 /* **** The End **** */

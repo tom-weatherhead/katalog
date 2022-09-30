@@ -5,15 +5,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "types.h"
 
 #include "char-source.h"
+#include "create-and-destroy.h"
 #include "string-builder.h"
 
 /* #include "associative-array.h"
 #include "evaluate.h"
-#include "create-and-destroy.h"
 #include "memory-manager.h"
 #include "parser.h"
 #include "utilities.h" */
@@ -83,73 +84,105 @@ Goals and functors are syntactically identical, but are distinguished from each 
 - A functor is used as a parameter to a goal or to a functor
 */
 
-/* static PROLOG_EXPRESSION * parseGoal(CharSource * cs) {
-	goalName = getLowerCaseId(cs);
-	argList = parseBracketedExpressionList(cs);
+static PROLOG_EXPRESSION * parseGoal(CharSource * cs) {
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
+
+	if (strlen(sb->name) == 0) {
+		fatalError("parseGoal() : Identifier is the empty string");
+		return NULL;
+	} else if (!islower(sb->name[0])) {
+		fatalError("parseGoal() : Identifier does not begin with a lower-case letter");
+		return NULL;
+	}
+
+	char * goalName = sb->name;
+	printf("parseGoal() : goalName is '%s'\n", goalName);
+	PROLOG_EXPRESSION_LIST_ELEMENT * argList = NULL; /* parseBracketedExpressionList(cs); */
 
 	return createGoal(goalName, argList);
 }
 
-static PROLOG_EXPRESSION * parseGoalListHelper(CharSource * cs) {
+static PROLOG_GOAL_LIST_ELEMENT * parseGoalListHelper(CharSource * cs) {
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
 
-	if "." then return NULL;
+	if (!strcmp(sb->name, ".")) {
+		return NULL; /* End of goal list */
+	} else if (strcmp(sb->name, ",")) {
+		fatalError("parseGoalListHelper() : Expected . or ,");
+		return NULL;
+	}
 
-	consume ","
-	goal = parseGoal();
-	next = parseGoalListHelper();
+	PROLOG_GOAL * goal = parseGoal(cs);
+	PROLOG_GOAL_LIST_ELEMENT * next = parseGoalListHelper(cs);
 
 	return createGoalListElement(goal, next);
-} */
+}
 
 /* The goals in the goal list are separated by commas. */
 /* The list is terminated by a dot ('.'). */
 
-/* static PROLOG_EXPRESSION * parseGoalList(CharSource * cs) {
-	return NULL;
+static PROLOG_EXPRESSION * parseGoalList(CharSource * cs) {
+	PROLOG_GOAL * goal = parseGoal(cs);
+	PROLOG_GOAL_LIST_ELEMENT * next = parseGoalListHelper(cs);
+
+	return createGoalListElement(goal, next);
 }
 
 static PROLOG_EXPRESSION * parseClauseTail(CharSource * cs) {
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
 
-	if "." then return NULL;
+	if (!strcmp(sb->name, ".")) {
+		return NULL; /* The clause has no tail */
+	} else if (strcmp(sb->name, ":-")) {
+		fatalError("parseClauseTail() : Expected . or :-");
+		return NULL;
+	}
 
-	consume ":-"
-	goal = parseGoal();
-	next = parseGoalListHelper();
+	PROLOG_GOAL * goal = parseGoal(cs);
+	PROLOG_GOAL_LIST_ELEMENT * next = parseGoalListHelper(cs);
 
 	return createGoalListElement(goal, next);
-} */
+}
 
 /* TODO here: Parse a goal */
 /* Then parse either a dot or a clause tail */
 /* A clause tail is :- followed by a non-empty goal list, concluded by a dot. */
 
-static PROLOG_EXPRESSION * parseClause(char * firstIdentifier, CharSource * cs) {
-	return NULL;
+static PROLOG_EXPRESSION * parseClause(CharSource * cs) {
+	printf("parseClause: parseGoal\n");
+	PROLOG_GOAL * head = parseGoal(cs);
+	printf("parseClause: parseClauseTail\n");
+	PROLOG_GOAL_LIST_ELEMENT * tail = parseClauseTail(cs);
+
+	printf("parseClause: createClause\n");
+	return createClause(head, tail);
 }
 
-static PROLOG_EXPRESSION * parseQuery(CharSource * cs) {
+static PROLOG_GOAL_LIST_ELEMENT * parseQuery(CharSource * cs) {
 	/* TODO here: Parse a goal (or a goal list?), concluded by a dot. */
 
-	return NULL;
+	return parseGoalList(cs);
 }
 
 PROLOG_INPUT * parseInput(CharSource * cs) {
-	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL, NULL);
+	printf("parseInput begin\n");
+
+	const int rewindPoint = cs->i;
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
 
 	if (isStringBuilderEmpty(sb)) {
 		fatalError("parseInput() : Expected a line of input, found EOF");
 		return NULL;
 	}
 
-	char * firstIdentifier = sb->name;
-
-	if (!strcmp(firstIdentifier, "?-")) {
+	if (!strcmp(sb->name, "?-")) {
 		return parseQuery(cs);
 	} else {
-		return parseClause(firstIdentifier, cs);
+		printf("parseInput: rewindPoint is %d\n", rewindPoint);
+		cs->i = rewindPoint; /* Rewind the CharSource to un-read the identifier we just read */
+		printf("parseInput: parseClause\n");
+		return parseClause(cs);
 	}
-
-	return NULL;
 }
 
 /* **** The End **** */
