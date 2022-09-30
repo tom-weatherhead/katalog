@@ -84,10 +84,15 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 	const char firstChar = cs->str[cs->i];
 	BOOL isSingleQuoted = FALSE;
 
+	/* TODO: Use something like stridx(firstChar, ".,()[]") or strchr(...) ? */
+
 	switch (firstChar) {
 		case '.':
+		case ',':
 		case '(':
 		case ')':
+		case '[':
+		case ']':
 		/* case '\'': */
 			/* printf("getIdentifier() : ( or ) : appendCharToStringBuilder...\n"); */
 			appendCharToStringBuilder(sb, firstChar);
@@ -123,7 +128,7 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 				++cs->i;
 				break;
 			}
-		} else if (isspace(c) || c == '.' || c == '(' || c == ')' /* || c == '\0' */) {
+		} else if (isspace(c) || c == '.' || c == ',' || c == '(' || c == ')' || c == '[' || c == ']' /* || c == '\0' */) {
 			break;
 		}
 

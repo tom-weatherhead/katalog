@@ -23,6 +23,7 @@
 
 /* Forward references */
 
+static PROLOG_FUNCTOR * parseFunctor(CharSource * cs);
 
 /* Parse an expression */
 
@@ -84,7 +85,97 @@ Goals and functors are syntactically identical, but are distinguished from each 
 - A functor is used as a parameter to a goal or to a functor
 */
 
-static PROLOG_EXPRESSION * parseGoal(CharSource * cs) {
+static PROLOG_EXPRESSION * parseExpression(CharSource * cs) {
+	const int rewindPoint = cs->i;
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
+
+	if (isStringBuilderEmpty(sb)) {
+		fatalError("parseExpression() : Unexpected EOF");
+		return NULL;
+	} else if (isupper(sb->name[0])) {
+		/* A variable */
+		return createVariable(sb->name);
+	} else if (!islower(sb->name[0])) {
+		fatalError("parseExpression() : Expected a variable or a functor");
+		return NULL;
+	}
+
+	cs->i = rewindPoint;
+
+	return parseFunctor(cs);
+}
+
+static PROLOG_EXPRESSION_LIST_ELEMENT * parseBracketedExpressionListHelper(CharSource * cs) {
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
+
+	if (isStringBuilderEmpty(sb)) {
+		fatalError("parseBracketedExpressionListHelper() : Unexpected EOF");
+		return NULL;
+	} else if (!strcmp(sb->name, ")")) {
+		/* End of list */
+		return NULL;
+	} else if (strcmp(sb->name, ",")) {
+		fatalError("parseBracketedExpressionListHelper() : Expected ,");
+		return NULL;
+	}
+
+	PROLOG_EXPRESSION * expr = parseExpression(cs);
+	PROLOG_EXPRESSION_LIST_ELEMENT * next = parseBracketedExpressionListHelper(cs);
+
+	return createExpressionListElement(expr, next);
+}
+
+static PROLOG_EXPRESSION_LIST_ELEMENT * parseBracketedExpressionList(CharSource * cs) {
+	const int rewindPoint = cs->i;
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
+
+	if (isStringBuilderEmpty(sb)) {
+		fatalError("parseBracketedExpressionList() : Unexpected EOF");
+		return NULL;
+	} else if (strcmp(sb->name, "(")) {
+		/* The goal or functor has no arguments */
+		cs->i = rewindPoint;
+		return NULL;
+	}
+
+	const int rewindPoint2 = cs->i;
+
+	sb = getIdentifier(cs, NULL);
+
+	if (!strcmp(sb->name, ")")) {
+		/* The goal or functor has no arguments */
+		return NULL;
+	}
+
+	cs->i = rewindPoint2;
+
+	PROLOG_EXPRESSION * expr = parseExpression(cs);
+	PROLOG_EXPRESSION_LIST_ELEMENT * next = parseBracketedExpressionListHelper(cs);
+
+	return createExpressionListElement(expr, next);
+}
+
+/* parseFunctor and parseGoal are essentially identical except for their calls to createFunctor / createGoal */
+
+static PROLOG_FUNCTOR * parseFunctor(CharSource * cs) {
+	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
+
+	if (strlen(sb->name) == 0) {
+		fatalError("parseFunctor() : Identifier is the empty string");
+		return NULL;
+	} else if (!islower(sb->name[0])) {
+		fatalError("parseFunctor() : Identifier does not begin with a lower-case letter");
+		return NULL;
+	}
+
+	char * functorName = sb->name;
+	printf("parseFunctor() : functorName is '%s'\n", functorName);
+	PROLOG_EXPRESSION_LIST_ELEMENT * argList = parseBracketedExpressionList(cs);
+
+	return createFunctor(functorName, argList);
+}
+
+static PROLOG_GOAL * parseGoal(CharSource * cs) {
 	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
 
 	if (strlen(sb->name) == 0) {
@@ -97,7 +188,7 @@ static PROLOG_EXPRESSION * parseGoal(CharSource * cs) {
 
 	char * goalName = sb->name;
 	printf("parseGoal() : goalName is '%s'\n", goalName);
-	PROLOG_EXPRESSION_LIST_ELEMENT * argList = NULL; /* parseBracketedExpressionList(cs); */
+	PROLOG_EXPRESSION_LIST_ELEMENT * argList = parseBracketedExpressionList(cs);
 
 	return createGoal(goalName, argList);
 }

@@ -349,13 +349,13 @@ LISP_EXPR * createSetExpression(LISP_VAR * var, LISP_EXPR * expr) {
 		expr,
 		NULL
 	);
-}
+} */
 
 // **** Expression list struct creation functions ****
 
-LISP_EXPR_LIST_ELEMENT * createExpressionListElement(LISP_EXPR * expr, LISP_EXPR_LIST_ELEMENT * next) {
+PROLOG_EXPRESSION_LIST_ELEMENT * createExpressionListElement(PROLOG_EXPRESSION * expr, PROLOG_EXPRESSION_LIST_ELEMENT * next) {
 	return createUniversalStruct(
-		schemeStructType_ExpressionListElement,
+		prologType_ExpressionListElement,
 		0,
 		0,
 		NULL,
@@ -363,7 +363,7 @@ LISP_EXPR_LIST_ELEMENT * createExpressionListElement(LISP_EXPR * expr, LISP_EXPR
 		NULL,
 		next
 	);
-} */
+}
 
 /* A variable is an Expression but not a Value. */
 
@@ -614,6 +614,18 @@ STRING_BUILDER_TYPE * createStringBuilder(int bufIncSize) {
 	/* failIf(getBufferSizeIncrementInStringBuilder(result) <= 0, "StringBuilder roundUpStringTypeBufferSize() : getBufferSizeIncrementInStringBuilder(result) <= 0"); */
 
 	return result;
+}
+
+PROLOG_FUNCTOR * createFunctor(char * name, PROLOG_EXPRESSION_LIST_ELEMENT * args) {
+	return createUniversalStruct(
+		prologType_Functor,
+		0,
+		0,
+		name,
+		args,
+		NULL,
+		NULL
+	);
 }
 
 PROLOG_GOAL * createGoal(char * name, PROLOG_EXPRESSION_LIST_ELEMENT * args) {
