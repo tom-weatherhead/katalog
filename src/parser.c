@@ -12,12 +12,12 @@
 #include "char-source.h"
 #include "create-and-destroy.h"
 #include "string-builder.h"
+#include "utilities.h"
 
 /* #include "associative-array.h"
 #include "evaluate.h"
 #include "memory-manager.h"
-#include "parser.h"
-#include "utilities.h" */
+#include "parser.h" */
 
 /* Function prototypes */
 
@@ -87,6 +87,7 @@ Goals and functors are syntactically identical, but are distinguished from each 
 
 static PROLOG_EXPRESSION * parseExpression(CharSource * cs) {
 	const int rewindPoint = cs->i;
+	int dstBufAsInt = 0;
 	STRING_BUILDER_TYPE * sb = getIdentifier(cs, NULL);
 
 	if (isStringBuilderEmpty(sb)) {
@@ -95,7 +96,10 @@ static PROLOG_EXPRESSION * parseExpression(CharSource * cs) {
 	} else if (isupper(sb->name[0])) {
 		/* A variable */
 		return createVariable(sb->name);
+	} else if (safeAtoi(sb->name, &dstBufAsInt)) {
+		return createInteger(dstBufAsInt);
 	} else if (!islower(sb->name[0])) {
+		fprintf(stderr, "sb->name is '%s'\n", sb->name);
 		fatalError("parseExpression() : Expected a variable or a functor");
 		return NULL;
 	}

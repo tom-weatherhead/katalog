@@ -88,6 +88,8 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 void runTests() {
 	printf("\nRunning tests...\n");
 
+	/* Test of goals with no arguments */
+
 	char * inputsGoalsWithNoArgs[] = {
 		"b.", /* b is true */
 		"a :- b.", /* If b then a */
@@ -103,30 +105,33 @@ void runTests() {
 
 	multitest(inputsGoalsWithNoArgs, expectedResultsGoalsWithNoArgs);
 
+	/* List reversal test - functor notation */
+
+	char * inputsListReversalFunctor[] = {
+		"accRev(cons(H, T), A, R) :- accRev(T, cons(H, A), R).",
+		"accRev(nil, A, A).",
+		"?- accRev(nil, nil, R).",
+		"?- accRev(cons(1, cons(2, nil)), nil, R).",
+		"?- accRev(cons(1, cons(2, cons(3, nil))), nil, R).",
+		NULL
+	};
+	char * expectedResultsListReversalFunctor[] = {
+		"", /* ClauseAdded */
+		"", /* ClauseAdded */
+		"", /* Satisfied */
+		"", /* Satisfied */
+		"", /* Satisfying substitution is: [R -> cons(3, cons(2, cons(1, nil)))]; Satisfied */
+		NULL
+	};
+
+	multitest(inputsListReversalFunctor, expectedResultsListReversalFunctor);
+
+	/* TODO: List reversal test - list notation */
+
 	printf("\nDone.\n");
 }
 
 /*
-test('LL(1) Prolog list reverse test', () => {
-	prologTest([
-		['accRev(cons(H, T), A, R) :- accRev(T, cons(H, A), R).', PrologGlobalInfo.ClauseAdded],
-		['accRev(nil, A, A).', PrologGlobalInfo.ClauseAdded],
-		['?- accRev(nil, nil, R).', ['Satisfied']],
-		['?- accRev(cons(1, cons(2, nil)), nil, R).', ['Satisfied']],
-		[
-			'?- accRev(cons(1, cons(2, cons(3, nil))), nil, R).',
-			['Satisfying substitution is: [R -> cons(3, cons(2, cons(1, nil)))]', 'Satisfied']
-		],
-		[
-			'?- accRev(cons(1, cons(2, cons(3, cons(4, nil)))), nil, R).',
-			[
-				'Satisfying substitution is: [R -> cons(4, cons(3, cons(2, cons(1, nil))))]',
-				'Satisfied'
-			]
-		]
-	]);
-});
-
 test('LL(1) Prolog list reversal test', () => {
 	prologTest([
 		['accRev([H | T], A, R):-  accRev(T, [H | A], R).', PrologGlobalInfo.ClauseAdded],

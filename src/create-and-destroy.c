@@ -116,9 +116,9 @@ void freeUniversalStruct(PROLOG_UNIVERSAL_TYPE * expr) {
 
 /* **** Value struct creation functions **** */
 
-/* LISP_VALUE * createNumericValue(int value) {
+PROLOG_INTEGER * createInteger(int value) {
 	return createUniversalStruct(
-		lispValueType_Number,
+		prologType_Integer,
 		value,
 		0,
 		NULL,
@@ -128,7 +128,7 @@ void freeUniversalStruct(PROLOG_UNIVERSAL_TYPE * expr) {
 	);
 }
 
-LISP_VALUE * createStringValue(char * str) {
+/* LISP_VALUE * createStringValue(char * str) {
 	int len = strlen(str);
 
 	if (len > 0 && str[0] == '"') {
