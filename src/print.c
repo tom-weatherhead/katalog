@@ -77,7 +77,6 @@ STRING_BUILDER_TYPE * printExpressionToStringBuilder(STRING_BUILDER_TYPE * sb, P
 
 		case prologType_Null:
 		case prologType_Substitution:
-			/* sb = appendToStringBuilder(sb, "<substitution>"); */
 			sb = appendToStringBuilder(sb, "[");
 
 			for (ptr = expr; ptr != NULL && ptr->type != prologType_Null; ptr = ptr->next) {
@@ -95,9 +94,6 @@ STRING_BUILDER_TYPE * printExpressionToStringBuilder(STRING_BUILDER_TYPE * sb, P
 			sb = appendToStringBuilder(sb, getNameInValue(expr));
 			break;
 
-		/* case prologType_ClauseListElement:
-		case prologType_ExpressionListElement: */
-
 		case prologType_GoalListElement:
 			sb = appendToStringBuilder(sb, "?- "); /* This should be appended only if this GoalListElement is the start of a query */
 
@@ -112,7 +108,6 @@ STRING_BUILDER_TYPE * printExpressionToStringBuilder(STRING_BUILDER_TYPE * sb, P
 			sb = appendToStringBuilder(sb, ".");
 			break;
 
-		/* case prologType_NameListElement: */
 		default:
 			fprintf(stderr, "printExpressionToStringBuilder() : Unexpected expr type %d\n", expr->type);
 			fatalError("printExpressionToStringBuilder() : Unexpected expr type");

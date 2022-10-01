@@ -80,8 +80,8 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 		fprintf(stderr, "  Actual output: %s\n\n", actualOutput);
 	}
 
-	/* clearKnowledgeBase();
-	freeAllStructs(); */
+	clearKnowledgeBase();
+	freeAllStructs();
 
 	if (!outputValuesMatch) {
 		exit(1);

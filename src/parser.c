@@ -14,11 +14,6 @@
 #include "string-builder.h"
 #include "utilities.h"
 
-/* #include "associative-array.h"
-#include "evaluate.h"
-#include "memory-manager.h"
-#include "parser.h" */
-
 /* Function prototypes */
 
 /* Forward references */

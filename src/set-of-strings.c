@@ -2,6 +2,8 @@
 
 /* See e.g. facility/src/string-set.c */
 
+/* TODO: Implement the set as a height-balanced (AVL) tree */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -18,9 +18,9 @@ PROLOG_SUBSTITUTION * unifyFunctor(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSA
 		return unify(that, this);
 	}
 
-	// A PrologFunctorExpression can unify with a PrologFunctorExpression;
-	// a PrologGoal can unify with a PrologGoal,
-	// but a PrologFunctorExpression cannot unify with a PrologGoal.
+	/* A PrologFunctorExpression can unify with a PrologFunctorExpression;
+	a PrologGoal can unify with a PrologGoal,
+	but a PrologFunctorExpression cannot unify with a PrologGoal. */
 
 	if (
 		that->type != prologType_Functor ||

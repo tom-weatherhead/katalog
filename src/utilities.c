@@ -63,7 +63,7 @@ BOOL safeAtoi(char * str, int * ptrToInt) {
 	return 0;
 } */
 
-BOOL isStringInList(char * str, char * list[]) {
+/* BOOL isStringInList(char * str, char * list[]) {
 	int i;
 
 	for (i = 0; list[i] != NULL; ++i) {
@@ -74,7 +74,7 @@ BOOL isStringInList(char * str, char * list[]) {
 	}
 
 	return FALSE;
-}
+} */
 
 void fail(char * str, char * file, int line) {
 	fprintf(stderr, "\nFatal error '%s' in file %s at line %d\n", str, file, line);
