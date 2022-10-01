@@ -12,7 +12,7 @@
 /* Type definitions */
 
 typedef struct PROLOG_UNIVERSAL_STRUCT {
-	/* Contains ten members. */
+	/* Contains eight members. */
 
 	int mark; /* All dynamically allocated structs must have this member */
 

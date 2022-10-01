@@ -16,6 +16,7 @@
 #include "variable.h"
 
 static PROLOG_CLAUSE_LIST_ELEMENT * knowledgeBase = NULL;
+static int nextUnusedVariableNum = 0;
 
 /* STRING_BUILDER_TYPE * toString(PROLOG_UNIVERSAL_TYPE * this, STRING_BUILDER_TYPE * sb) {
 
@@ -326,37 +327,90 @@ void addClauseToKnowledgeBase(PROLOG_CLAUSE * clause) {
 	listOfCurrentModules: PrologModule[]
 */
 
+static PROLOG_VARIABLE * createUnusedVariable() {
+	char buf[20];
+
+	sprintf(buf, "*var%d", nextUnusedVariableNum++);
+
+	return createVariable(buf);
+}
+
+static PROLOG_CLAUSE * renameVariablesInClause(PROLOG_CLAUSE * clause) {
+	SET_OF_STRINGS * bindingVariables = findBindingVariables(clause);
+	SET_OF_STRINGS * sub = createNull();
+
+	for (; bindingVariables != NULL; bindingVariables = bindingVariables->next) {
+		sub = createNameValueListElement(bindingVariables->name, createUnusedVariable(), sub);
+	}
+
+	return applySubstitution(clause, sub);
+}
+
+static PROLOG_GOAL_LIST_ELEMENT * copyGoalListAndAppend(PROLOG_GOAL_LIST_ELEMENT * goalList, PROLOG_GOAL_LIST_ELEMENT * goalListToAppend) {
+
+	if (goalList == NULL) {
+		return goalListToAppend;
+	}
+
+	return createGoalListElement(getGoalInGoalListElement(goalList), copyGoalListAndAppend(goalList->next, goalListToAppend));
+}
+
 static PROLOG_SUBSTITUTION * proveGoalListHelper(
 	PROLOG_GOAL_LIST_ELEMENT * goalList,
 	PROLOG_SUBSTITUTION * oldSubstitution,
 	SET_OF_STRINGS * parentVariablesToAvoid
 	/* , SET_OF_STRINGS * variablesInQuery */
 ) {
-	failIf(goalList == NULL, "proveGoalList() : goalList == NULL");
+	/* failIf(goalList == NULL, "proveGoalList() : goalList == NULL");
 
 	if (goalList->next != NULL) {
 		printf("WARNING: proveGoalList() currently only handles goalLists of length one.\n");
+	} */
+
+	if (goalList == NULL) {
+		return oldSubstitution; /* The goal list has been proven. */
 	}
 
+	PROLOG_GOAL * goal = applySubstitution(getGoalInGoalListElement(goalList), oldSubstitution);
 	PROLOG_CLAUSE_LIST_ELEMENT * ptr;
 
 	for (ptr = knowledgeBase; ptr != NULL; ptr = ptr->next) {
 		PROLOG_CLAUSE * clause = getClauseInClauseListElement(ptr);
-		PROLOG_SUBSTITUTION * unifier = unify(getGoalInGoalListElement(goalList), getHeadInClause(clause));
+		PROLOG_CLAUSE * renamedClause = renameVariablesInClause(clause);
 
-		if (unifier != NULL) {
-			printf("\nunifier: ");
-			printExpression(unifier);
-			printf("GoalInGoalList: ");
-			printExpression(getGoalInGoalListElement(goalList));
-			printf("HeadInClause: ");
-			printExpression(getHeadInClause(clause));
-			printf("Substituted GoalInGoalList: ");
-			printExpression(applySubstitution(getGoalInGoalListElement(goalList), unifier));
-			printf("Substituted HeadInClause: ");
-			printExpression(applySubstitution(getHeadInClause(clause), unifier));
+		printf("\nclause: ");
+		printExpression(clause);
+		printf("renamedClause: ");
+		printExpression(renamedClause);
 
-			return unifier;
+		PROLOG_SUBSTITUTION * unifier = unify(goal, getHeadInClause(renamedClause));
+
+		if (unifier == NULL) {
+			continue;
+		}
+
+		printf("\nunifier: ");
+		printExpression(unifier);
+		printf("GoalInGoalList: ");
+		printExpression(getGoalInGoalListElement(goalList));
+		printf("HeadInClause: ");
+		printExpression(getHeadInClause(renamedClause));
+		printf("Substituted GoalInGoalList: ");
+		printExpression(applySubstitution(getGoalInGoalListElement(goalList), unifier));
+		printf("Substituted HeadInClause: ");
+		printExpression(applySubstitution(getHeadInClause(renamedClause), unifier));
+
+		PROLOG_SUBSTITUTION * newSubstitution = compose(oldSubstitution, unifier);
+
+		/* Create a goal list that is a copy of getTailInClause(renamedClause)
+		with goalList->next appended to the end of it. */
+
+		PROLOG_GOAL_LIST_ELEMENT * newGoalList = copyGoalListAndAppend(getTailInClause(renamedClause), goalList->next);
+
+		PROLOG_SUBSTITUTION * result = proveGoalListHelper(newGoalList, newSubstitution, parentVariablesToAvoid);
+
+		if (result != NULL) {
+			return result;
 		}
 	}
 
