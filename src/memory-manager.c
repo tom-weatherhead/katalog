@@ -12,9 +12,6 @@
 
 /* External constants / variables */
 
-/* extern LISP_VALUE * globalNullValue;
-extern LISP_VALUE * globalTrueValue; */
-
 /* Local constants / variables */
 
 static int numMallocs = 0;
@@ -165,8 +162,6 @@ int collectGarbage(PROLOG_UNIVERSAL_TYPE * exprTreesToMark[]) {
 }
 
 int freeAllStructs() {
-	/* globalNullValue = NULL;
-	globalTrueValue = NULL; */
 	clearMarks();
 
 	return freeUnmarkedStructs();

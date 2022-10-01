@@ -17,6 +17,7 @@
 
 #include "types.h"
 
+#include "memory-manager.h"
 #include "tests.h"
 
 /* **** The Main MoFo **** */
@@ -50,13 +51,13 @@ int main(int argc, char * argv[]) {
 		execScriptInFile(filename, NULL);
 	} else {
 		readEvalPrintLoop();
-	}
+	} */
 
 	const int numFreed = freeAllStructs();
 
 	printf("gc final: %d block(s) of memory freed.\n", numFreed);
 
-	mmPrintReport(); */
+	mmPrintReport();
 
 	return 0; /* Zero (as a Unix exit code) means success. */
 }
