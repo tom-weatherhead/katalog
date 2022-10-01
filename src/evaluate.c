@@ -18,21 +18,6 @@
 static PROLOG_CLAUSE_LIST_ELEMENT * knowledgeBase = NULL;
 static int nextUnusedVariableNum = 0;
 
-/* STRING_BUILDER_TYPE * toString(PROLOG_UNIVERSAL_TYPE * this, STRING_BUILDER_TYPE * sb) {
-
-	switch (this->type) {
-		case prologType_Variable:
-			return appendToStringBuilder(sb, this->name);
-
-		case prologType_Substitution:
-		case prologType_Goal:
-		case prologType_Clause:
-		default:
-			fatalError("toString() : Bad object type");
-			return NULL;
-	}
-} */
-
 BOOL equals(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSAL_TYPE * that) {
 	failIf(this == NULL, "equals() : this == NULL");
 	failIf(that == NULL, "equals() : that == NULL");
@@ -48,10 +33,6 @@ BOOL equals(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSAL_TYPE * that) {
 		case prologType_Variable:
 			return !strcmp(this->name, that->name);
 
-		/* case prologType_Substitution:
-		case prologType_Functor:
-		case prologType_Goal:
-		case prologType_Clause: */
 		default:
 			fprintf(stderr, "equals() : Bad object type %d\n", this->type);
 			fatalError("equals() : Bad object type");
@@ -151,8 +132,6 @@ PROLOG_EXPRESSION * applySubstitution(PROLOG_UNIVERSAL_TYPE * this, PROLOG_SUBST
 
 	PROLOG_UNIVERSAL_TYPE * value = NULL;
 
-	/* printf("applySubstitution() : this->type is %d\n", this->type); */
-
 	switch (this->type) {
 		case prologType_Integer:
 			return this;
@@ -209,12 +188,11 @@ PROLOG_SUBSTITUTION * unify(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSAL_TYPE 
 		case prologType_Integer:
 
 		if (equals(this, that)) {
-			// Do not use "if (this == otherExpr)", which just compares references.
 			return createNull();
 		} else if (that->type == prologType_Variable) {
 			return unify(that, this);
 		} else {
-			return NULL; // The PrologIntegerLiteral and the IPrologExpression are not unifiable.
+			return NULL; /* Not unifiable. */
 		}
 
 		case prologType_Variable:
@@ -357,15 +335,10 @@ static PROLOG_GOAL_LIST_ELEMENT * copyGoalListAndAppend(PROLOG_GOAL_LIST_ELEMENT
 
 static PROLOG_SUBSTITUTION * proveGoalListHelper(
 	PROLOG_GOAL_LIST_ELEMENT * goalList,
-	PROLOG_SUBSTITUTION * oldSubstitution,
+	PROLOG_SUBSTITUTION * oldSubstitution /* ,
 	SET_OF_STRINGS * parentVariablesToAvoid
-	/* , SET_OF_STRINGS * variablesInQuery */
+	, SET_OF_STRINGS * variablesInQuery */
 ) {
-	/* failIf(goalList == NULL, "proveGoalList() : goalList == NULL");
-
-	if (goalList->next != NULL) {
-		printf("WARNING: proveGoalList() currently only handles goalLists of length one.\n");
-	} */
 
 	if (goalList == NULL) {
 		return oldSubstitution; /* The goal list has been proven. */
@@ -407,7 +380,7 @@ static PROLOG_SUBSTITUTION * proveGoalListHelper(
 
 		PROLOG_GOAL_LIST_ELEMENT * newGoalList = copyGoalListAndAppend(getTailInClause(renamedClause), goalList->next);
 
-		PROLOG_SUBSTITUTION * result = proveGoalListHelper(newGoalList, newSubstitution, parentVariablesToAvoid);
+		PROLOG_SUBSTITUTION * result = proveGoalListHelper(newGoalList, newSubstitution);
 
 		if (result != NULL) {
 			return result;
@@ -424,7 +397,7 @@ PROLOG_SUBSTITUTION * proveGoalList(PROLOG_GOAL_LIST_ELEMENT * goalList) {
 	that are also in variablesInQuery.
 	This will avoid printing a ton of unneeded intermediate variables. */
 
-	PROLOG_SUBSTITUTION * rawUnifier = proveGoalListHelper(goalList, createNull(), NULL);
+	PROLOG_SUBSTITUTION * rawUnifier = proveGoalListHelper(goalList, createNull());
 
 	if (rawUnifier == NULL) {
 		printf("proveGoalList() : No unifier found.\n");

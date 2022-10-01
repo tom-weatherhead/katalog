@@ -11,7 +11,6 @@
 #include "create-and-destroy.h"
 #include "memory-manager.h"
 #include "string-builder.h"
-/* #include "utilities.h" */
 
 /* **** CharSource functions **** */
 
@@ -93,8 +92,6 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 		case ')':
 		case '[':
 		case ']':
-		/* case '\'': */
-			/* printf("getIdentifier() : ( or ) : appendCharToStringBuilder...\n"); */
 			appendCharToStringBuilder(sb, firstChar);
 			cs->i++;
 			return sb;
@@ -102,12 +99,6 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 		default:
 			break;
 	}
-
-	/* failIf(isSingleQuoted && pIsSingleQuoted == NULL);
-
-	if (pIsSingleQuoted == NULL) {
-		*pIsSingleQuoted = isSingleQuoted;
-	} */
 
 	const BOOL isString = (cs->str[cs->i] == '"') ? TRUE : FALSE;
 	BOOL isStringClosed = FALSE;
