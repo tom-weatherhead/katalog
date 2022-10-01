@@ -13,8 +13,6 @@
 #include "parser.h"
 #include "print.h"
 
-static PROLOG_CLAUSE_LIST_ELEMENT * knowledgeBase = NULL;
-
 /* Functions */
 
 PROLOG_INPUT * processInput(char * str) {
@@ -28,16 +26,14 @@ PROLOG_INPUT * processInput(char * str) {
 
 	STRING_BUILDER_TYPE * sb = printExpressionToStringBuilder(NULL, parseTree);
 
-	printf("parseTree as string: '%s'\n", getStringInStringBuilder(sb));
+	/* printf("parseTree as string: '%s'\n", getStringInStringBuilder(sb)); */
 
 	failIf(strcmp(getStringInStringBuilder(sb), str), "processInput: Parsed string differs from input.");
 
 	if (parseTree->type == prologType_Clause) {
 		printf("Adding clause to knowledge base...\n");
-		knowledgeBase = createClauseListElement(parseTree, knowledgeBase);
+		addClauseToKnowledgeBase(parseTree);
 	} else {
-		printf("TODO: Executing query...\n");
-
 		/* PROLOG_SUBSTITUTION * unifier = */ proveGoalList(parseTree);
 	}
 
@@ -53,18 +49,19 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 	int i;
 	/* STRING_BUILDER_TYPE * sb = NULL; */
 
-	knowledgeBase = NULL;
+	printf("\nclearKnowledgeBase()\n");
+	clearKnowledgeBase();
 
 	for (i = 0; outputValuesMatch; ++i) {
 		input = inputs[i];
 		expectedOutput = expectedOutputs[i];
 
 		if (input == NULL || expectedOutput == NULL) {
-			printf("multitest: break\n");
+			printf("\nmultitest: break\n");
 			break;
 		}
 
-		printf("multitest: input is '%s'\n", input);
+		printf("\nmultitest: input is '%s'\n", input);
 
 		/* PROLOG_INPUT * value = */ processInput(input);
 
@@ -83,7 +80,7 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 		fprintf(stderr, "  Actual output: %s\n\n", actualOutput);
 	}
 
-	/* knowledgeBase = NULL;
+	/* clearKnowledgeBase();
 	freeAllStructs(); */
 
 	if (!outputValuesMatch) {

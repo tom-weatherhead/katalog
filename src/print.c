@@ -75,8 +75,20 @@ STRING_BUILDER_TYPE * printExpressionToStringBuilder(STRING_BUILDER_TYPE * sb, P
 			sb = appendToStringBuilder(sb, intSprintfBuffer);
 			break;
 
+		case prologType_Null:
 		case prologType_Substitution:
-			sb = appendToStringBuilder(sb, "<substitution>");
+			/* sb = appendToStringBuilder(sb, "<substitution>"); */
+			sb = appendToStringBuilder(sb, "[");
+
+			for (ptr = expr; ptr != NULL && ptr->type != prologType_Null; ptr = ptr->next) {
+				sb = appendToStringBuilder(sb, separatorStr);
+				sb = appendToStringBuilder(sb, ptr->name);
+				sb = appendToStringBuilder(sb, " -> ");
+				sb = printExpressionToStringBuilder(sb, getValueInNameValueListElement(ptr));
+				separatorStr = "; ";
+			}
+
+			sb = appendToStringBuilder(sb, "]");
 			break;
 
 		case prologType_Variable:
@@ -108,6 +120,12 @@ STRING_BUILDER_TYPE * printExpressionToStringBuilder(STRING_BUILDER_TYPE * sb, P
 	}
 
 	return sb;
+}
+
+void printExpression(PROLOG_EXPRESSION * expr) {
+	STRING_BUILDER_TYPE * sb = printExpressionToStringBuilder(NULL, expr);
+
+	printf("%s\n", sb->name);
 }
 
 /* **** The End **** */

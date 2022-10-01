@@ -423,6 +423,8 @@ PROLOG_NAME_LIST_ELEMENT * createNameListElement(char * name, PROLOG_NAME_LIST_E
 }
 
 PROLOG_NAME_VALUE_LIST_ELEMENT * createNameValueListElement(char * name, PROLOG_EXPRESSION * value, PROLOG_NAME_VALUE_LIST_ELEMENT * next) {
+	failIf(name == NULL, "createNameValueListElement() : name == NULL");
+
 	return allocateStringAndCreateUniversalStruct(
 		prologType_NameValueListElement,
 		0,
@@ -673,6 +675,18 @@ PROLOG_CLAUSE_LIST_ELEMENT * createClauseListElement(PROLOG_CLAUSE * clause, PRO
 		clause,
 		NULL,
 		next
+	);
+}
+
+PROLOG_UNIVERSAL_TYPE * createNull() {
+	return createUniversalStruct(
+		prologType_Null,
+		0,
+		0,
+		NULL,
+		NULL,
+		NULL,
+		NULL
 	);
 }
 

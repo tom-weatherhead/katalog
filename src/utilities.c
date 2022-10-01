@@ -87,13 +87,13 @@ void fail(char * str, char * file, int line) {
 	return value->type == lispValueType_PrimitiveOperator || value->type == lispValueType_Closure;
 } */
 
-/* int getLinkedListLength(SCHEME_UNIVERSAL_TYPE * ptr) {
+int getLinkedListLength(PROLOG_UNIVERSAL_TYPE * ptr) {
 
 	if (ptr == NULL) {
 		return 0;
 	}
 
 	return getLinkedListLength(ptr->next) + 1;
-} */
+}
 
 /* **** The End **** */

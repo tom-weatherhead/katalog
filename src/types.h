@@ -52,6 +52,10 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 #define getHeadInClause(c) ((c)->value1)
 #define getTailInClause(c) ((c)->value2)
 
+#define getClauseInClauseListElement(cle) ((cle)->value1)
+
+#define getExpressionInExpressionListElement(ele) ((ele)->value1)
+
 #define getArgumentsInFunctorOrGoal(fg) ((fg)->value1)
 
 #define getGoalInGoalListElement(gle) ((gle)->value1)
@@ -73,12 +77,14 @@ enum {
 	prologType_Integer,
 	/* prologType_, */
 	prologType_StringBuilder,
+	prologType_Null,
 
 	prologType_ClauseListElement,
 	prologType_ExpressionListElement,
 	prologType_GoalListElement, /* I.e. Set<Variable> */
 	prologType_NameListElement, /* I.e. Set<Variable> */
 	prologType_NameValueListElement = prologType_Substitution
+	/* , prologType_SetOfStringsElement = prologType_NameListElement */
 };
 
 void fail(char * str, char * file, int line);

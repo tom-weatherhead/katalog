@@ -11,6 +11,7 @@ PROLOG_GOAL_LIST_ELEMENT * createGoalListElement(PROLOG_GOAL * goal, PROLOG_GOAL
 PROLOG_INTEGER * createInteger(int value);
 PROLOG_NAME_LIST_ELEMENT * createNameListElement(char * name, PROLOG_NAME_LIST_ELEMENT * next);
 PROLOG_NAME_VALUE_LIST_ELEMENT * createNameValueListElement(char * name, PROLOG_EXPRESSION * value, PROLOG_NAME_VALUE_LIST_ELEMENT * next);
+PROLOG_UNIVERSAL_TYPE * createNull();
 STRING_BUILDER_TYPE * createStringBuilder(int bufIncSize);
 PROLOG_VARIABLE * createVariable(char * name);
 

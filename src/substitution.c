@@ -56,6 +56,8 @@ PROLOG_EXPRESSION * lookupValueInSubstitutionList(char * name, PROLOG_SUBSTITUTI
 	PROLOG_SUBSTITUTION * ptr;
 
 	for (ptr = sub; ptr != NULL; ptr = ptr->next) {
+		failIf(ptr->type != prologType_NameValueListElement, "lookupValueInSubstitutionList() : ptr->type != prologType_NameValueListElement");
+		failIf(ptr->name == NULL, "lookupValueInSubstitutionList() : ptr->name == NULL");
 
 		if (!strcmp(ptr->name, name)) {
 			return getValueInNameValueListElement(ptr);
@@ -66,6 +68,13 @@ PROLOG_EXPRESSION * lookupValueInSubstitutionList(char * name, PROLOG_SUBSTITUTI
 }
 
 PROLOG_SUBSTITUTION * compose(PROLOG_SUBSTITUTION * this, PROLOG_SUBSTITUTION * otherSub) {
+
+	if (this->type == prologType_Null) {
+		return otherSub;
+	} else if (otherSub->type == prologType_Null) {
+		return this;
+	}
+
 	PROLOG_SUBSTITUTION * newSub = NULL;
 	PROLOG_SUBSTITUTION * ptr;
 
