@@ -25,11 +25,11 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 
 	struct PROLOG_UNIVERSAL_STRUCT * value1;
 	struct PROLOG_UNIVERSAL_STRUCT * value2;
-	struct PROLOG_UNIVERSAL_STRUCT * value3;
+	/* struct PROLOG_UNIVERSAL_STRUCT * value3; */
 
 	struct PROLOG_UNIVERSAL_STRUCT * next; /* To allow linked lists */
 
-	void * aux;
+	/* void * aux; */
 } PROLOG_UNIVERSAL_TYPE;
 
 #define PROLOG_CLAUSE PROLOG_UNIVERSAL_TYPE

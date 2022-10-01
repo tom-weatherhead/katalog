@@ -110,7 +110,7 @@ static void setMarksInExprTree(PROLOG_UNIVERSAL_TYPE * expr) {
 
 	setMarksInExprTree(expr->value1);
 	setMarksInExprTree(expr->value2);
-	setMarksInExprTree(expr->value3);
+	/* setMarksInExprTree(expr->value3); */
 	setMarksInExprTree(expr->next);
 
 	/* if (expr->type == lispValueType_AssociativeArray) {
@@ -130,7 +130,7 @@ static int freeUnmarkedStructs() {
 			Allow mmRec->item->name to be freed. */
 			mmRec->item->value1 = NULL;
 			mmRec->item->value2 = NULL;
-			mmRec->item->value3 = NULL;
+			/* mmRec->item->value3 = NULL; */
 			mmRec->item->next = NULL;
 			freeUniversalStruct(mmRec->item);
 
