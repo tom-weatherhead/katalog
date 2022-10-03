@@ -50,8 +50,9 @@ static PROLOG_EXPRESSION * parseExpression(CharSource * cs) {
 	if (isStringBuilderEmpty(sb)) {
 		fatalError("parseExpression() : Unexpected EOF");
 		return NULL;
-	} else if (isupper(sb->name[0])) {
+	} else if (isupper(sb->name[0]) || !strcmp(sb->name, "_")) {
 		/* A variable */
+		/* The variable named '_' is a non-binding variable */
 		return createVariable(sb->name);
 	} else if (safeAtoi(sb->name, &dstBufAsInt)) {
 		return createInteger(dstBufAsInt);
@@ -142,6 +143,9 @@ static PROLOG_GOAL * parseGoal(CharSource * cs) {
 	if (strlen(sb->name) == 0) {
 		fatalError("parseGoal() : Identifier is the empty string");
 		return NULL;
+	} else if (!strcmp(sb->name, "!")) {
+		/* Create a 'cut' goal */
+		return createGoal(sb->name, NULL);
 	} else if (!islower(sb->name[0])) {
 		fatalError("parseGoal() : Identifier does not begin with a lower-case letter");
 		return NULL;

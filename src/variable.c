@@ -1,15 +1,12 @@
 /* katalog/src/variable.c */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "types.h"
 
 #include "create-and-destroy.h"
 #include "evaluate.h"
-#include "string-builder.h"
-#include "substitution.h"
 
 /* The following supports non-binding variables such as _ and _Foo .
 // See http://www.csupomona.edu/~jrfisher/www/prolog_tutorial/2_3.html

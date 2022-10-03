@@ -92,6 +92,8 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 		case ')':
 		case '[':
 		case ']':
+		case '!': /* The 'cut' goal */
+		case '_': /* A non-binding variable */
 			appendCharToStringBuilder(sb, firstChar);
 			cs->i++;
 			return sb;
@@ -109,6 +111,8 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 		++cs->i;
 	}
 
+	/* TODO: Handle the 'not' symbol: \+ */
+
 	while (cs->i < cs->len) {
 		const char c = cs->str[cs->i];
 
@@ -119,7 +123,7 @@ STRING_BUILDER_TYPE * getIdentifier(CharSource * cs, STRING_BUILDER_TYPE * sb) {
 				++cs->i;
 				break;
 			}
-		} else if (isspace(c) || c == '.' || c == ',' || c == '(' || c == ')' || c == '[' || c == ']' /* || c == '\0' */) {
+		} else if (isspace(c) || c == '.' || c == ',' || c == '(' || c == ')' || c == '[' || c == ']' || c == '!' || c == '_' /* || c == '\0' */) {
 			break;
 		}
 

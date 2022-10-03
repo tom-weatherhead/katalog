@@ -1,16 +1,12 @@
 /* katalog/src/substitution.c */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "types.h"
 
 #include "create-and-destroy.h"
 #include "evaluate.h"
-#include "string-builder.h"
-#include "substitution.h"
-#include "variable.h"
 
 BOOL substitutionContainsOnlyVariables(PROLOG_SUBSTITUTION * this) {
 	PROLOG_SUBSTITUTION * ptr;

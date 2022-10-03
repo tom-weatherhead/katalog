@@ -151,6 +151,24 @@ test('LL(1) Prolog list reversal test', () => {
 	]);
 });
 
+test('LL(1) Prolog basic cut test', () => {
+	// C# version of this test: 2014/03/08
+
+	// Assert.AreEqual(notSatisfied, globalInfo.ProcessInputString("?- G(_).")); // Before 2014/03/13 : This assert fails; the query is satisfied.
+
+	// 2014/03/13 : Fixed: See PrologVariable.Unify(); we no longer create bindings such as { X = _ }
+
+	prologTest([
+		['g(X) :- h(X), !, i(X).', PrologGlobalInfo.ClauseAdded],
+		['g(20).', PrologGlobalInfo.ClauseAdded],
+		['h(7).', PrologGlobalInfo.ClauseAdded],
+		['h(13).', PrologGlobalInfo.ClauseAdded],
+		['i(13).', PrologGlobalInfo.ClauseAdded],
+		['?- g(X).', [PrologGlobalInfo.NotSatisfied]],
+		['?- g(_).', [PrologGlobalInfo.NotSatisfied]]
+	]);
+});
+
 test('LL(1) Prolog not test', () => {
 	prologTest([
 		['foo(X) :- \\+ bar(X).', PrologGlobalInfo.ClauseAdded],
