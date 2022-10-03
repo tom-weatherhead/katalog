@@ -16,6 +16,7 @@
 #include "variable.h"
 
 static PROLOG_CLAUSE_LIST_ELEMENT * knowledgeBase = NULL;
+static int nextCutReturnNum = 0;
 static int nextUnusedVariableNum = 0;
 
 BOOL equals(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSAL_TYPE * that) {

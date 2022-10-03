@@ -1,17 +1,18 @@
 /* katalog/src/goal.c */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "types.h"
 
 #include "create-and-destroy.h"
 #include "evaluate.h"
-#include "string-builder.h"
 #include "substitution.h"
 #include "utilities.h"
-#include "variable.h"
+
+BOOL isCut(PROLOG_GOAL * goal) {
+	return goal != NULL && goal->type == prologType_Goal && !strcmp(goal->name, "!");
+}
 
 PROLOG_SUBSTITUTION * unifyGoal(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSAL_TYPE * that) {
 

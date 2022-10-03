@@ -51,6 +51,8 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 
 #define getClauseInClauseListElement(cle) ((cle)->value1)
 
+#define getCutReturnNumberInCutReturnOrGoal(sb) ((sb)->integerValue)
+
 #define getExpressionInExpressionListElement(ele) ((ele)->value1)
 
 #define getArgumentsInFunctorOrGoal(fg) ((fg)->value1)
@@ -75,6 +77,7 @@ enum {
 	/* prologType_, */
 	prologType_StringBuilder,
 	prologType_Null,
+	prologType_CutReturn,
 
 	prologType_ClauseListElement,
 	prologType_ExpressionListElement,
