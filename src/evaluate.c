@@ -11,7 +11,6 @@
 #include "goal.h"
 #include "print.h"
 #include "set-of-strings.h"
-#include "string-builder.h"
 #include "substitution.h"
 #include "variable.h"
 
@@ -325,13 +324,22 @@ static PROLOG_CLAUSE * renameVariablesInClause(PROLOG_CLAUSE * clause) {
 	return applySubstitution(clause, sub);
 }
 
-static PROLOG_GOAL_LIST_ELEMENT * copyGoalListAndAppend(PROLOG_GOAL_LIST_ELEMENT * goalList, PROLOG_GOAL_LIST_ELEMENT * goalListToAppend) {
+static PROLOG_GOAL_LIST_ELEMENT * copyGoalListAndAppend(PROLOG_GOAL_LIST_ELEMENT * goalList, PROLOG_GOAL_LIST_ELEMENT * goalListToAppend, int * pnCutReturnNumber) {
 
 	if (goalList == NULL) {
 		return goalListToAppend;
 	}
 
-	return createGoalListElement(getGoalInGoalListElement(goalList), copyGoalListAndAppend(goalList->next, goalListToAppend));
+	PROLOG_GOAL * goal = getGoalInGoalListElement(goalList);
+
+	if (isCut(goal)) {
+		const int cutReturnNumber = ++nextCutReturnNum;
+
+		*pnCutReturnNumber = cutReturnNumber;
+		getCutReturnNumberInCutReturnOrGoal(goal) = cutReturnNumber;
+	}
+
+	return createGoalListElement(goal, copyGoalListAndAppend(goalList->next, goalListToAppend, pnCutReturnNumber));
 }
 
 static PROLOG_SUBSTITUTION * proveGoalListHelper(
@@ -379,11 +387,19 @@ static PROLOG_SUBSTITUTION * proveGoalListHelper(
 		/* Create a goal list that is a copy of getTailInClause(renamedClause)
 		with goalList->next appended to the end of it. */
 
-		PROLOG_GOAL_LIST_ELEMENT * newGoalList = copyGoalListAndAppend(getTailInClause(renamedClause), goalList->next);
+		int cutReturnNumber = -1;
+		PROLOG_GOAL_LIST_ELEMENT * newGoalList = copyGoalListAndAppend(getTailInClause(renamedClause), goalList->next, &cutReturnNumber);
 
 		PROLOG_SUBSTITUTION * result = proveGoalListHelper(newGoalList, newSubstitution);
 
 		if (result != NULL) {
+
+			if (result->type == prologType_CutReturn && getCutReturnNumberInCutReturnOrGoal(result) == cutReturnNumber) {
+				/* We have finished handling a cut that was backtracked through
+				Now allow backtracking to resume */
+				continue;
+			}
+
 			return result;
 		}
 	}
