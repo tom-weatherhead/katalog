@@ -353,7 +353,27 @@ static PROLOG_SUBSTITUTION * proveGoalListHelper(
 		return oldSubstitution; /* The goal list has been proven. */
 	}
 
-	PROLOG_GOAL * goal = applySubstitution(getGoalInGoalListElement(goalList), oldSubstitution);
+	PROLOG_GOAL * goal = getGoalInGoalListElement(goalList);
+
+	if (isCut(goal)) {
+		/* The 'cut' goal always succeeeds trivially; it only affects backtracking */
+
+		PROLOG_SUBSTITUTION * result = proveGoalListHelper(goalList->next, oldSubstitution);
+
+		if (result == NULL) {
+			/* **** Here is where the 'cut' magic happens **** */
+			/* We are trying to backtrack through a cut. */
+			const int cutReturnNumber = getCutReturnNumberInCutReturnOrGoal(goal);
+
+			failIf(cutReturnNumber <= 0, "proveGoalListHelper() : Backtracking through a cut : cutReturnNumber in cut goal <= 0");
+			result = createCutReturn(cutReturnNumber);
+		}
+
+		return result;
+	}
+
+	goal = applySubstitution(goal, oldSubstitution);
+
 	PROLOG_CLAUSE_LIST_ELEMENT * ptr;
 
 	for (ptr = knowledgeBase; ptr != NULL; ptr = ptr->next) {

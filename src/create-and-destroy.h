@@ -4,6 +4,7 @@
 
 PROLOG_CLAUSE * createClause(PROLOG_GOAL * head, PROLOG_GOAL_LIST_ELEMENT * tail);
 PROLOG_CLAUSE_LIST_ELEMENT * createClauseListElement(PROLOG_CLAUSE * clause, PROLOG_CLAUSE_LIST_ELEMENT * next);
+PROLOG_UNIVERSAL_TYPE * createCutReturn(int cutReturnNumber);
 PROLOG_EXPRESSION_LIST_ELEMENT * createExpressionListElement(PROLOG_EXPRESSION * expr, PROLOG_EXPRESSION_LIST_ELEMENT * next);
 PROLOG_FUNCTOR * createFunctor(char * name, PROLOG_EXPRESSION_LIST_ELEMENT * args);
 PROLOG_GOAL * createGoal(char * name, PROLOG_EXPRESSION_LIST_ELEMENT * args);

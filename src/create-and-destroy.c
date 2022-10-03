@@ -264,4 +264,16 @@ PROLOG_UNIVERSAL_TYPE * createNull() {
 	);
 }
 
+PROLOG_UNIVERSAL_TYPE * createCutReturn(int cutReturnNumber) {
+	return createUniversalStruct(
+		prologType_CutReturn,
+		cutReturnNumber,
+		0,
+		NULL,
+		NULL,
+		NULL,
+		NULL
+	);
+}
+
 /* **** The End **** */

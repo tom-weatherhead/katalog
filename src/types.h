@@ -51,7 +51,7 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 
 #define getClauseInClauseListElement(cle) ((cle)->value1)
 
-#define getCutReturnNumberInCutReturnOrGoal(sb) ((sb)->integerValue)
+#define getCutReturnNumberInCutReturnOrGoal(crg) ((crg)->integerValue)
 
 #define getExpressionInExpressionListElement(ele) ((ele)->value1)
 
