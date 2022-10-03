@@ -12,6 +12,7 @@
 #include "memory-manager.h"
 #include "parser.h"
 #include "print.h"
+#include "string-builder.h"
 
 /* Functions */
 
@@ -33,11 +34,11 @@ PROLOG_INPUT * processInput(char * str) {
 	if (parseTree->type == prologType_Clause) {
 		printf("Adding clause to knowledge base...\n");
 		addClauseToKnowledgeBase(parseTree);
-	} else {
-		/* PROLOG_SUBSTITUTION * unifier = */ proveGoalList(parseTree);
-	}
 
-	return parseTree;
+		return parseTree;
+	} else {
+		return proveGoalList(parseTree);
+	}
 }
 
 static void multitest(char * inputs[], char * expectedOutputs[]) {
@@ -47,7 +48,7 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 	char * input = NULL;
 	char * expectedOutput = NULL;
 	int i;
-	/* STRING_BUILDER_TYPE * sb = NULL; */
+	STRING_BUILDER_TYPE * sb = NULL;
 
 	printf("\nclearKnowledgeBase()\n");
 	clearKnowledgeBase();
@@ -63,14 +64,24 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 
 		printf("\nmultitest: input is '%s'\n", input);
 
-		/* PROLOG_INPUT * value = */ processInput(input);
+		PROLOG_INPUT * value = processInput(input);
 
-		/* clearStringBuilder(sb);
-		sb = printValueToStringEx(sb, value, NULL, TRUE);
+		actualOutput = NULL;
 
-		actualOutput = sb->name;
+		if (value == NULL) {
+			actualOutput = "No unifier found.";
+		} else if (value->type == prologType_Clause) {
+			actualOutput = "Clause added.";
+		} else {
+			failIf(value->type != prologType_Substitution && value->type != prologType_Null, "processInput() returned a value of an unexpected type");
 
-		outputValuesMatch = strlen(expectedOutput) == 0 || !strcmp(actualOutput, expectedOutput); */
+			clearStringBuilder(sb);
+			sb = printExpressionToStringBuilder(sb, value);
+
+			actualOutput = sb->name;
+		}
+
+		outputValuesMatch = strlen(expectedOutput) == 0 || !strcmp(actualOutput, expectedOutput);
 	}
 
 	if (!outputValuesMatch) {
@@ -103,7 +114,7 @@ void runTests() {
 	char * expectedResultsGoalsWithNoArgs[] = {
 		"",
 		"",
-		"",
+		"[]", /* The unifier is the empty substitution */
 		NULL
 	};
 
@@ -124,7 +135,7 @@ void runTests() {
 		"", /* ClauseAdded */
 		"", /* Satisfied */
 		"", /* Satisfied */
-		"", /* Satisfying substitution is: [R -> cons(3, cons(2, cons(1, nil)))]; Satisfied */
+		"[R -> cons(3, cons(2, cons(1, nil)))]",
 		NULL
 	};
 
@@ -132,44 +143,99 @@ void runTests() {
 
 	/* TODO: List reversal test - list notation */
 
+	/* ['accRev([H | T], A, R):-  accRev(T, [H | A], R).', PrologGlobalInfo.ClauseAdded],
+	['accRev([], A, A).', PrologGlobalInfo.ClauseAdded],
+	['rev(L, R) :- accRev(L, [], R).', PrologGlobalInfo.ClauseAdded],
+	['?- rev([1, 2, 3, 4], R).', success('R -> [4, 3, 2, 1]')],
+	['?- accRev([1, 2, 3, 4], [], R).', ['Satisfied']],
+	['?- accRev([], [], R).', ['Satisfied', '[R -> []]']],
+	['?- accRev([1], [], R).', ['Satisfied', '[R -> [1]]']],
+	['?- accRev([1, 2], [], R).', ['Satisfied', '[R -> [2, 1]]']],
+	['?- accRev([1, 2, 3], [], R).', ['Satisfied', '[R -> [3, 2, 1]]']],
+	['?- accRev([1, 2, 3, 4], [], R).', ['Satisfied', '[R -> [4, 3, 2, 1]]']] */
+
+	/* Basic cut test */
+
+	char * inputsBasicCut1[] = {
+		"g(X) :- h(X), !, i(X).",
+		"g(86).",
+		"h(7).",
+		"i(13).",
+		"?- g(X).",
+		NULL
+	};
+	char * expectedResultsBasicCut1[] = {
+		"",
+		"",
+		"",
+		"",
+		"No unifier found.",
+		NULL
+	};
+
+	multitest(inputsBasicCut1, expectedResultsBasicCut1);
+
+	char * inputsBasicCut2[] = {
+		"g(86).",
+		"g(X) :- h(X), !, i(X).",
+		"h(7).",
+		"i(13).",
+		"?- g(X).",
+		NULL
+	};
+	char * expectedResultsBasicCut2[] = {
+		"",
+		"",
+		"",
+		"",
+		"[X -> 86]",
+		NULL
+	};
+
+	multitest(inputsBasicCut2, expectedResultsBasicCut2);
+
+	char * inputsBasicCut3[] = {
+		"g(X) :- h(X), i(X).",
+		"g(86).",
+		"h(7).",
+		"i(13).",
+		"?- g(X).",
+		NULL
+	};
+	char * expectedResultsBasicCut3[] = {
+		"",
+		"",
+		"",
+		"",
+		"[X -> 86]",
+		NULL
+	};
+
+	multitest(inputsBasicCut3, expectedResultsBasicCut3);
+
+	char * inputsBasicCut4[] = {
+		"g(X) :- h(X), !, i(X).",
+		"g(86).",
+		"h(13).",
+		"i(13).",
+		"?- g(X).",
+		NULL
+	};
+	char * expectedResultsBasicCut4[] = {
+		"",
+		"",
+		"",
+		"",
+		"[X -> 13]",
+		NULL
+	};
+
+	multitest(inputsBasicCut4, expectedResultsBasicCut4);
+
 	printf("\nDone.\n");
 }
 
-/*
-test('LL(1) Prolog list reversal test', () => {
-	prologTest([
-		['accRev([H | T], A, R):-  accRev(T, [H | A], R).', PrologGlobalInfo.ClauseAdded],
-		['accRev([], A, A).', PrologGlobalInfo.ClauseAdded],
-		['rev(L, R) :- accRev(L, [], R).', PrologGlobalInfo.ClauseAdded],
-		['?- rev([1, 2, 3, 4], R).', success('R -> [4, 3, 2, 1]')],
-		['?- accRev([1, 2, 3, 4], [], R).', ['Satisfied']],
-		['?- accRev([], [], R).', ['Satisfied', '[R -> []]']],
-		['?- accRev([1], [], R).', ['Satisfied', '[R -> [1]]']],
-		['?- accRev([1, 2], [], R).', ['Satisfied', '[R -> [2, 1]]']],
-		['?- accRev([1, 2, 3], [], R).', ['Satisfied', '[R -> [3, 2, 1]]']],
-		['?- accRev([1, 2, 3, 4], [], R).', ['Satisfied', '[R -> [4, 3, 2, 1]]']]
-	]);
-});
-
-test('LL(1) Prolog basic cut test', () => {
-	// C# version of this test: 2014/03/08
-
-	// Assert.AreEqual(notSatisfied, globalInfo.ProcessInputString("?- G(_).")); // Before 2014/03/13 : This assert fails; the query is satisfied.
-
-	// 2014/03/13 : Fixed: See PrologVariable.Unify(); we no longer create bindings such as { X = _ }
-
-	prologTest([
-		['g(X) :- h(X), !, i(X).', PrologGlobalInfo.ClauseAdded],
-		['g(20).', PrologGlobalInfo.ClauseAdded],
-		['h(7).', PrologGlobalInfo.ClauseAdded],
-		['h(13).', PrologGlobalInfo.ClauseAdded],
-		['i(13).', PrologGlobalInfo.ClauseAdded],
-		['?- g(X).', [PrologGlobalInfo.NotSatisfied]],
-		['?- g(_).', [PrologGlobalInfo.NotSatisfied]]
-	]);
-});
-
-test('LL(1) Prolog not test', () => {
+/* test('LL(1) Prolog not test', () => {
 	prologTest([
 		['foo(X) :- \\+ bar(X).', PrologGlobalInfo.ClauseAdded],
 		['bar(7).', PrologGlobalInfo.ClauseAdded],

@@ -74,7 +74,6 @@ enum {
 	prologType_Goal,
 	prologType_Clause,
 	prologType_Integer,
-	/* prologType_, */
 	prologType_StringBuilder,
 	prologType_Null,
 	prologType_CutReturn,

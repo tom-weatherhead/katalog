@@ -292,7 +292,16 @@ void clearKnowledgeBase() {
 }
 
 void addClauseToKnowledgeBase(PROLOG_CLAUSE * clause) {
-	knowledgeBase = createClauseListElement(clause, knowledgeBase);
+	/* The order of this list is important.
+	So append the new clause to the end of the linked list. */
+
+	PROLOG_CLAUSE_LIST_ELEMENT ** pp = &knowledgeBase;
+
+	while (*pp != NULL) {
+		pp = &((*pp)->next);
+	}
+
+	*pp = createClauseListElement(clause, NULL);
 }
 
 /* Params to the C# proveGoalList() :
@@ -357,7 +366,6 @@ static PROLOG_SUBSTITUTION * proveGoalListHelper(
 
 	if (isCut(goal)) {
 		/* The 'cut' goal always succeeeds trivially; it only affects backtracking */
-
 		PROLOG_SUBSTITUTION * result = proveGoalListHelper(goalList->next, oldSubstitution);
 
 		if (result == NULL) {
@@ -366,6 +374,7 @@ static PROLOG_SUBSTITUTION * proveGoalListHelper(
 			const int cutReturnNumber = getCutReturnNumberInCutReturnOrGoal(goal);
 
 			failIf(cutReturnNumber <= 0, "proveGoalListHelper() : Backtracking through a cut : cutReturnNumber in cut goal <= 0");
+			/* printf("**** Cut number %d has been used ****\n", cutReturnNumber); */
 			result = createCutReturn(cutReturnNumber);
 		}
 
@@ -380,27 +389,18 @@ static PROLOG_SUBSTITUTION * proveGoalListHelper(
 		PROLOG_CLAUSE * clause = getClauseInClauseListElement(ptr);
 		PROLOG_CLAUSE * renamedClause = renameVariablesInClause(clause);
 
-		printf("\nclause: ");
-		printExpression(clause);
-		printf("renamedClause: ");
-		printExpression(renamedClause);
-
 		PROLOG_SUBSTITUTION * unifier = unify(goal, getHeadInClause(renamedClause));
 
 		if (unifier == NULL) {
 			continue;
 		}
 
-		printf("\nunifier: ");
-		printExpression(unifier);
-		printf("GoalInGoalList: ");
+		printf("\nGoalInGoalList: ");
 		printExpression(getGoalInGoalListElement(goalList));
 		printf("HeadInClause: ");
 		printExpression(getHeadInClause(renamedClause));
-		printf("Substituted GoalInGoalList: ");
-		printExpression(applySubstitution(getGoalInGoalListElement(goalList), unifier));
-		printf("Substituted HeadInClause: ");
-		printExpression(applySubstitution(getHeadInClause(renamedClause), unifier));
+		printf("unifier: ");
+		printExpression(unifier);
 
 		PROLOG_SUBSTITUTION * newSubstitution = compose(oldSubstitution, unifier);
 
@@ -417,7 +417,7 @@ static PROLOG_SUBSTITUTION * proveGoalListHelper(
 			if (result->type == prologType_CutReturn && getCutReturnNumberInCutReturnOrGoal(result) == cutReturnNumber) {
 				/* We have finished handling a cut that was backtracked through
 				Now allow backtracking to resume */
-				continue;
+				break; /* So that NULL will be returned. */
 			}
 
 			return result;
@@ -437,14 +437,14 @@ PROLOG_SUBSTITUTION * proveGoalList(PROLOG_GOAL_LIST_ELEMENT * goalList) {
 	PROLOG_SUBSTITUTION * rawUnifier = proveGoalListHelper(goalList, createNull());
 
 	if (rawUnifier == NULL) {
-		printf("proveGoalList() : No unifier found.\n");
+		/* printf("proveGoalList() : No unifier found.\n"); */
 
 		return NULL; /* No solution found. */
 	}
 
-	STRING_BUILDER_TYPE * sb = printExpressionToStringBuilder(NULL, rawUnifier);
+	/* STRING_BUILDER_TYPE * sb = printExpressionToStringBuilder(NULL, rawUnifier);
 
-	printf("proveGoalList() : The raw unifier is: %s\n", sb->name);
+	printf("proveGoalList() : The raw unifier is: %s\n", sb->name); */
 
 	PROLOG_SUBSTITUTION * filteredUnifier = NULL;
 	PROLOG_SUBSTITUTION * ptr;
@@ -460,9 +460,9 @@ PROLOG_SUBSTITUTION * proveGoalList(PROLOG_GOAL_LIST_ELEMENT * goalList) {
 		filteredUnifier = createNull();
 	}
 
-	sb = printExpressionToStringBuilder(NULL, filteredUnifier);
+	/* sb = printExpressionToStringBuilder(NULL, filteredUnifier);
 
-	printf("proveGoalList() : The filtered unifier is: %s\n", sb->name);
+	printf("proveGoalList() : The filtered unifier is: %s\n", sb->name); */
 
 	return filteredUnifier;
 }

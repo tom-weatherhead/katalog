@@ -11,6 +11,7 @@
 
 #include "char-source.h"
 #include "create-and-destroy.h"
+#include "goal.h"
 #include "string-builder.h"
 #include "utilities.h"
 
@@ -145,14 +146,18 @@ static PROLOG_GOAL * parseGoal(CharSource * cs) {
 		return NULL;
 	} else if (!strcmp(sb->name, "!")) {
 		/* Create a 'cut' goal */
-		return createGoal(sb->name, NULL);
+		/* return createGoal(sb->name, NULL); */
+		PROLOG_GOAL * cut = createGoal(sb->name, NULL);
+
+		failIf(!isCut(cut), "parseGoal() : Cut not recognized");
+
+		return cut;
 	} else if (!islower(sb->name[0])) {
 		fatalError("parseGoal() : Identifier does not begin with a lower-case letter");
 		return NULL;
 	}
 
 	char * goalName = sb->name;
-	/* printf("parseGoal() : goalName is '%s'\n", goalName); */
 	PROLOG_EXPRESSION_LIST_ELEMENT * argList = parseBracketedExpressionList(cs);
 
 	return createGoal(goalName, argList);
