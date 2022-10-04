@@ -103,18 +103,39 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 static void avlTreeTest() {
 	BINARY_TREE_NODE_TYPE * tree = NULL;
 
-	tree = avlTreeInsert("b", tree);
-	tree = avlTreeInsert("j", tree);
-	tree = avlTreeInsert("g", tree);
-	tree = avlTreeInsert("a", tree);
-	tree = avlTreeInsert("e", tree);
-	tree = avlTreeInsert("f", tree);
-	tree = avlTreeInsert("i", tree);
-	tree = avlTreeInsert("c", tree);
-	tree = avlTreeInsert("h", tree);
-	tree = avlTreeInsert("d", tree);
+	/* tree = avlTreeInsertKey("b", tree);
+	tree = avlTreeInsertKey("j", tree);
+	tree = avlTreeInsertKey("g", tree);
+	tree = avlTreeInsertKey("a", tree);
+	tree = avlTreeInsertKey("e", tree);
+	tree = avlTreeInsertKey("f", tree);
+	tree = avlTreeInsertKey("i", tree);
+	tree = avlTreeInsertKey("c", tree);
+	tree = avlTreeInsertKey("h", tree);
+	tree = avlTreeInsertKey("d", tree); */
+
+	tree = avlTreeInsertKeyAndValue("b", createInteger(2), tree);
+	tree = avlTreeInsertKeyAndValue("j", createInteger(10), tree);
+	tree = avlTreeInsertKeyAndValue("g", createInteger(7), tree);
+	tree = avlTreeInsertKeyAndValue("a", createInteger(1), tree);
+	tree = avlTreeInsertKeyAndValue("e", createInteger(5), tree);
+	tree = avlTreeInsertKeyAndValue("f", createInteger(6), tree);
+	tree = avlTreeInsertKeyAndValue("i", createInteger(9), tree);
+	tree = avlTreeInsertKeyAndValue("c", createInteger(3), tree);
+	tree = avlTreeInsertKeyAndValue("h", createInteger(8), tree);
+	tree = avlTreeInsertKeyAndValue("d", createInteger(4), tree);
 
 	avlTreeInOrderTraversal(tree);
+
+	PROLOG_UNIVERSAL_TYPE * valueG = lookupValueInAvlTree("g", tree, NULL);
+
+	printf("Lookup 'g' -> ");
+
+	if (valueG == NULL) {
+		printf("NULL\n");
+	} else {
+		printExpression(valueG);
+	}
 }
 
 void runTests() {

@@ -1,7 +1,14 @@
 /* katalog/src/avl-tree.h */
 
-BINARY_TREE_NODE_TYPE * avlTreeInsert(char * key, BINARY_TREE_NODE_TYPE * node);
-BOOL isKeyInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node);
+/* typedef AVL_TREE_KEY_TYPE ?;
+typedef AVL_TREE_VALUE_TYPE ?; */
+
+BINARY_TREE_NODE_TYPE * avlTreeInsertKey(char * key, BINARY_TREE_NODE_TYPE * node);
+BINARY_TREE_NODE_TYPE * avlTreeInsertKeyAndValue(char * key, PROLOG_UNIVERSAL_TYPE * value, BINARY_TREE_NODE_TYPE * node);
+
 void avlTreeInOrderTraversal(BINARY_TREE_NODE_TYPE * node);
+
+BOOL isKeyInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node);
+PROLOG_UNIVERSAL_TYPE * lookupValueInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node, PROLOG_UNIVERSAL_TYPE * defaultValue);
 
 /* **** The End **** */

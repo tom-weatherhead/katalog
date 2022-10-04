@@ -7,6 +7,7 @@
 #include "types.h"
 
 #include "create-and-destroy.h"
+#include "print.h"
 
 /* AVL tree in (ML?) */
 
@@ -24,26 +25,6 @@ static BINARY_TREE_NODE_TYPE * createBinaryTreeLeaf() {
 static BOOL isBinaryTreeLeaf(BINARY_TREE_NODE_TYPE * node) {
 	return node == NULL;
 }
-
-/* static BINARY_TREE_NODE_TYPE * createBinaryTreeNode(char * key, BINARY_TREE_NODE_TYPE * ltree, BINARY_TREE_NODE_TYPE * rtree) {
-	fatalError("createBinaryTreeNode() not implemented");
-	return NULL;
-}
-
-static char * getKeyInBinaryTree(BINARY_TREE_NODE_TYPE * node) {
-	fatalError("getKeyInBinaryTree() not implemented");
-	return NULL;
-}
-
-static BINARY_TREE_NODE_TYPE * getLeftSubtree(BINARY_TREE_NODE_TYPE * node) {
-	fatalError("getLeftSubtree() not implemented");
-	return NULL;
-}
-
-static BINARY_TREE_NODE_TYPE * getRightSubtree(BINARY_TREE_NODE_TYPE * node) {
-	fatalError("getRightSubtree() not implemented");
-	return NULL;
-} */
 
 static int treeHeight(BINARY_TREE_NODE_TYPE * node) {
 
@@ -103,14 +84,16 @@ static BINARY_TREE_NODE_TYPE * rotateLeft(BINARY_TREE_NODE_TYPE * node) {
 	failIf(isBinaryTreeLeaf(rtree), "rotateLeft() : RightSubtree is a leaf node");
 
 	char * key1 = getKeyInBinaryTree(node);
+	PROLOG_UNIVERSAL_TYPE * value1 = getValueInBinaryTree(node);
 	char * key2 = getKeyInBinaryTree(rtree);
+	PROLOG_UNIVERSAL_TYPE * value2 = getValueInBinaryTree(rtree);
 	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
 	BINARY_TREE_NODE_TYPE * rltree = getLeftSubtree(rtree);
 	BINARY_TREE_NODE_TYPE * rrtree = getRightSubtree(rtree);
 
-	BINARY_TREE_NODE_TYPE * newLtree = createBinaryTreeNode(key1, ltree, rltree);
+	BINARY_TREE_NODE_TYPE * newLtree = createBinaryTreeNode(key1, value1, ltree, rltree);
 
-	return createBinaryTreeNode(key2, newLtree, rrtree);
+	return createBinaryTreeNode(key2, value2, newLtree, rrtree);
 }
 
 /*     B        A
@@ -136,14 +119,16 @@ static BINARY_TREE_NODE_TYPE * rotateRight(BINARY_TREE_NODE_TYPE * node) {
 	failIf(isBinaryTreeLeaf(ltree), "rotateRight() : LeftSubtree is a leaf node");
 
 	char * key1 = getKeyInBinaryTree(node);
+	PROLOG_UNIVERSAL_TYPE * value1 = getValueInBinaryTree(node);
 	char * key2 = getKeyInBinaryTree(ltree);
+	PROLOG_UNIVERSAL_TYPE * value2 = getValueInBinaryTree(ltree);
 	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
 	BINARY_TREE_NODE_TYPE * lltree = getLeftSubtree(ltree);
 	BINARY_TREE_NODE_TYPE * lrtree = getRightSubtree(ltree);
 
-	BINARY_TREE_NODE_TYPE * newRtree = createBinaryTreeNode(key1, lrtree, rtree);
+	BINARY_TREE_NODE_TYPE * newRtree = createBinaryTreeNode(key1, value1, lrtree, rtree);
 
-	return createBinaryTreeNode(key2, lltree, newRtree);
+	return createBinaryTreeNode(key2, value2, lltree, newRtree);
 }
 
 /* fun RotateRightLeft Lf = Lf
@@ -158,10 +143,11 @@ static BINARY_TREE_NODE_TYPE * rotateRightLeft(BINARY_TREE_NODE_TYPE * node) {
 	}
 
 	char * key = getKeyInBinaryTree(node);
+	PROLOG_UNIVERSAL_TYPE * value = getValueInBinaryTree(node);
 	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
 	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
 
-	return rotateLeft(createBinaryTreeNode(key, ltree, rotateRight(rtree)));
+	return rotateLeft(createBinaryTreeNode(key, value, ltree, rotateRight(rtree)));
 }
 
 /* fun RotateLeftRight Lf = Lf
@@ -176,10 +162,11 @@ static BINARY_TREE_NODE_TYPE * rotateLeftRight(BINARY_TREE_NODE_TYPE * node) {
 	}
 
 	char * key = getKeyInBinaryTree(node);
+	PROLOG_UNIVERSAL_TYPE * value = getValueInBinaryTree(node);
 	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
 	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
 
-	return rotateRight(createBinaryTreeNode(key, rotateLeft(ltree), rtree));
+	return rotateRight(createBinaryTreeNode(key, value, rotateLeft(ltree), rtree));
 }
 
 /* In Br( (k, 1, x), Lf, Lf ), the 1 appears to be the subtree height.
@@ -213,19 +200,20 @@ fun AVLInsert (k, x, Lf) = Br( (k, 1, x), Lf, Lf )
 		else
 			Br((k1, h1, x), ltree, rtree); (* Just replace the contents *) */
 
-static BINARY_TREE_NODE_TYPE * avlTreeInsertHelper(char * key, BINARY_TREE_NODE_TYPE * node) {
+static BINARY_TREE_NODE_TYPE * avlTreeInsertHelper(char * key, PROLOG_UNIVERSAL_TYPE * value, BINARY_TREE_NODE_TYPE * node) {
 
 	if (isBinaryTreeLeaf(node)) {
-		return createBinaryTreeNode(key, createBinaryTreeLeaf(), createBinaryTreeLeaf());
+		return createBinaryTreeNode(key, value, createBinaryTreeLeaf(), createBinaryTreeLeaf());
 	}
 
 	char * key1 = getKeyInBinaryTree(node);
+	PROLOG_UNIVERSAL_TYPE * value1 = getValueInBinaryTree(node);
 	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
 	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
 
 	if (isKeyLessThan(key, key1)) {
-		BINARY_TREE_NODE_TYPE * newltree = avlTreeInsertHelper(key, ltree);
-		BINARY_TREE_NODE_TYPE * newtree = createBinaryTreeNode(key1, newltree, rtree);
+		BINARY_TREE_NODE_TYPE * newltree = avlTreeInsertHelper(key, value, ltree);
+		BINARY_TREE_NODE_TYPE * newtree = createBinaryTreeNode(key1, value1, newltree, rtree);
 
 		if (treeHeight(newltree) <= treeHeight(rtree) + 1) {
 			return newtree;
@@ -235,8 +223,8 @@ static BINARY_TREE_NODE_TYPE * avlTreeInsertHelper(char * key, BINARY_TREE_NODE_
 			return rotateLeftRight(newtree);
 		}
 	} else if (isKeyLessThan(key1, key)) {
-		BINARY_TREE_NODE_TYPE * newrtree = avlTreeInsertHelper(key, rtree);
-		BINARY_TREE_NODE_TYPE * newtree = createBinaryTreeNode(key1, ltree, newrtree);
+		BINARY_TREE_NODE_TYPE * newrtree = avlTreeInsertHelper(key, value, rtree);
+		BINARY_TREE_NODE_TYPE * newtree = createBinaryTreeNode(key1, value1, ltree, newrtree);
 
 		if (treeHeight(newrtree) <= treeHeight(ltree) + 1) {
 			return newtree;
@@ -246,19 +234,31 @@ static BINARY_TREE_NODE_TYPE * avlTreeInsertHelper(char * key, BINARY_TREE_NODE_
 			return rotateRightLeft(newtree);
 		}
 	} else {
-		/* Just replace the contents */
-		return createBinaryTreeNode(key1, ltree, rtree);
+		/* Just replace the contents: Replace value1 with value */
+		return createBinaryTreeNode(key1, value, ltree, rtree);
 	}
 }
 
-BINARY_TREE_NODE_TYPE * avlTreeInsert(char * key, BINARY_TREE_NODE_TYPE * node) {
-	calculateTreeHeightAndVerifyBalance(node, "AVL pre-Insert: Balance check failed");
+BINARY_TREE_NODE_TYPE * avlTreeInsertKey(char * key, BINARY_TREE_NODE_TYPE * node) {
+	calculateTreeHeightAndVerifyBalance(node, "AVL pre-Insert key: Balance check failed");
 
-	BINARY_TREE_NODE_TYPE * result = avlTreeInsertHelper(key, node);
+	BINARY_TREE_NODE_TYPE * result = avlTreeInsertHelper(key, NULL, node);
 
-	const int height = calculateTreeHeightAndVerifyBalance(result, "AVL post-Insert: Balance check failed");
+	const int height = calculateTreeHeightAndVerifyBalance(result, "AVL post-Insert key: Balance check failed");
 
-	printf("'%s' : Tree height is now %d\n", key, height);
+	printf("Insert key '%s': Tree height is now %d\n", key, height);
+
+	return result;
+}
+
+BINARY_TREE_NODE_TYPE * avlTreeInsertKeyAndValue(char * key, PROLOG_UNIVERSAL_TYPE * value, BINARY_TREE_NODE_TYPE * node) {
+	calculateTreeHeightAndVerifyBalance(node, "AVL pre-Insert key and value: Balance check failed");
+
+	BINARY_TREE_NODE_TYPE * result = avlTreeInsertHelper(key, value, node);
+
+	const int height = calculateTreeHeightAndVerifyBalance(result, "AVL post-Insert key and value: Balance check failed");
+
+	printf("Insert key '%s' and value: Tree height is now %d\n", key, height);
 
 	return result;
 }
@@ -315,7 +315,18 @@ void avlTreeInOrderTraversal(BINARY_TREE_NODE_TYPE * node) {
 	}
 
 	avlTreeInOrderTraversal(getLeftSubtree(node));
-	printf("Key: '%s'\n", getKeyInBinaryTree(node));
+
+	char * valueAsString = "<null>";
+	PROLOG_UNIVERSAL_TYPE * value = getValueInBinaryTree(node);
+	STRING_BUILDER_TYPE * sb = NULL;
+
+	if (value != NULL) {
+		sb = printExpressionToStringBuilder(NULL, value);
+		valueAsString = sb->name;
+	}
+
+	printf("Key: '%s' -> Value: '%s'\n", getKeyInBinaryTree(node), valueAsString);
+
 	avlTreeInOrderTraversal(getRightSubtree(node));
 }
 
@@ -334,6 +345,24 @@ BOOL isKeyInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node) {
 		return isKeyInAvlTree(key, getRightSubtree(node));
 	} else {
 		return TRUE;
+	}
+}
+
+PROLOG_UNIVERSAL_TYPE * lookupValueInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node, PROLOG_UNIVERSAL_TYPE * defaultValue) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return defaultValue;
+	}
+
+	/* Binary search */
+	const int comparison = strcmp(key, getKeyInBinaryTree(node));
+
+	if (comparison < 0) {
+		return lookupValueInAvlTree(key, getLeftSubtree(node), defaultValue);
+	} else if (comparison > 0) {
+		return lookupValueInAvlTree(key, getRightSubtree(node), defaultValue);
+	} else {
+		return getValueInBinaryTree(node);
 	}
 }
 
