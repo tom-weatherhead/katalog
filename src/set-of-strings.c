@@ -53,6 +53,55 @@ SET_OF_STRINGS * unionOfSetsOfStrings(SET_OF_STRINGS * set1, SET_OF_STRINGS * se
 
 /* AVL tree in (ML?) */
 
+/* This tree can be used as either a set of strings
+or a dictionary with string-type keys and any type of values */
+
+#define BINARY_TREE_NODE_TYPE PROLOG_UNIVERSAL_TYPE
+
+static BOOL isKeyLessThan(char * key1, char * key2) {
+	return strcmp(key1, key2) < 0;
+}
+
+static BINARY_TREE_NODE_TYPE * createBinaryTreeLeaf() {
+	return NULL;
+}
+
+static BOOL isBinaryTreeLeaf(BINARY_TREE_NODE_TYPE * node) {
+	return node == NULL;
+}
+
+/* static BINARY_TREE_NODE_TYPE * createBinaryTreeNode(char * key, BINARY_TREE_NODE_TYPE * ltree, BINARY_TREE_NODE_TYPE * rtree) {
+	fatalError("createBinaryTreeNode() not implemented");
+	return NULL;
+}
+
+static char * getKeyInBinaryTree(BINARY_TREE_NODE_TYPE * node) {
+	fatalError("getKeyInBinaryTree() not implemented");
+	return NULL;
+}
+
+static BINARY_TREE_NODE_TYPE * getLeftSubtree(BINARY_TREE_NODE_TYPE * node) {
+	fatalError("getLeftSubtree() not implemented");
+	return NULL;
+}
+
+static BINARY_TREE_NODE_TYPE * getRightSubtree(BINARY_TREE_NODE_TYPE * node) {
+	fatalError("getRightSubtree() not implemented");
+	return NULL;
+} */
+
+static int treeHeight(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return 0;
+	}
+
+	const int lheight = treeHeight(getLeftSubtree(node));
+	const int rheight = treeHeight(getRightSubtree(node));
+
+	return ((lheight > rheight) ? lheight : rheight) + 1;
+}
+
 /*   A            B
  *  / \          / \
  * a   B   ->   A   c
@@ -62,9 +111,30 @@ SET_OF_STRINGS * unionOfSetsOfStrings(SET_OF_STRINGS * set1, SET_OF_STRINGS * se
 fun RotateLeft Lf = Lf
 	| RotateLeft (Br(_,_,Lf)) = Lf  (* Error *)
 	| RotateLeft (Br((k1,_,x1),ltree,(Br((k2,_,x2),rltree,rrtree)))) =
-		NewNode(k2,x2,NewNode(k1,x1,ltree,rltree),rrtree);
+		NewNode(k2,x2,NewNode(k1,x1,ltree,rltree),rrtree); */
 
- *     B        A
+static BINARY_TREE_NODE_TYPE * rotateLeft(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return createBinaryTreeLeaf();
+	}
+
+	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
+
+	failIf(isBinaryTreeLeaf(rtree), "rotateLeft() : RightSubtree is a leaf node");
+
+	char * key1 = getKeyInBinaryTree(node);
+	char * key2 = getKeyInBinaryTree(rtree);
+	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
+	BINARY_TREE_NODE_TYPE * rltree = getLeftSubtree(rtree);
+	BINARY_TREE_NODE_TYPE * rrtree = getRightSubtree(rtree);
+
+	BINARY_TREE_NODE_TYPE * newLtree = createBinaryTreeNode(key1, ltree, rltree);
+
+	return createBinaryTreeNode(key2, newLtree, rrtree);
+}
+
+/*     B        A
  *    / \      / \
  *   A   c -> a   B
  *  / \          / \
@@ -73,15 +143,64 @@ fun RotateLeft Lf = Lf
 fun RotateRight Lf = Lf
 	| RotateRight (Br(_,Lf,_)) = Lf  (* Error *)
 	| RotateRight (Br((k1,_,x1),(Br((k2,_,x2),lltree,lrtree)),rtree)) =
-		NewNode(k2,x2,lltree,NewNode(k1,x1,lrtree,rtree));
+		NewNode(k2,x2,lltree,NewNode(k1,x1,lrtree,rtree)); */
 
-fun RotateRightLeft Lf = Lf
+static BINARY_TREE_NODE_TYPE * rotateRight(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return createBinaryTreeLeaf();
+	}
+
+	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
+
+	failIf(isBinaryTreeLeaf(ltree), "rotateRight() : LeftSubtree is a leaf node");
+
+	char * key1 = getKeyInBinaryTree(node);
+	char * key2 = getKeyInBinaryTree(ltree);
+	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
+	BINARY_TREE_NODE_TYPE * lltree = getLeftSubtree(ltree);
+	BINARY_TREE_NODE_TYPE * lrtree = getRightSubtree(ltree);
+
+	BINARY_TREE_NODE_TYPE * newRtree = createBinaryTreeNode(key1, lrtree, rtree);
+
+	return createBinaryTreeNode(key2, lltree, newRtree);
+}
+
+/* fun RotateRightLeft Lf = Lf
 	| RotateRightLeft (Br((k,_,x),ltree,rtree)) =
-		RotateLeft(NewNode(k,x,ltree,RotateRight(rtree)));
+		RotateLeft(NewNode(k,x,ltree,RotateRight(rtree))); */
 
-fun RotateLeftRight Lf = Lf
+static BINARY_TREE_NODE_TYPE * rotateRightLeft(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return createBinaryTreeLeaf();
+	}
+
+	char * key = getKeyInBinaryTree(node);
+	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
+	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
+
+	return rotateLeft(createBinaryTreeNode(key, ltree, rotateRight(rtree)));
+}
+
+/* fun RotateLeftRight Lf = Lf
 	| RotateLeftRight (Br((k,_,x),ltree,rtree)) =
-		RotateRight(NewNode(k,x,RotateLeft(ltree),rtree));
+		RotateRight(NewNode(k,x,RotateLeft(ltree),rtree)); */
+
+static BINARY_TREE_NODE_TYPE * rotateLeftRight(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return createBinaryTreeLeaf();
+	}
+
+	char * key = getKeyInBinaryTree(node);
+	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
+	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
+
+	return rotateRight(createBinaryTreeNode(key, rotateLeft(ltree), rtree));
+}
+
+/* In Br( (k, 1, x), Lf, Lf ), the 1 appears to be the subtree height.
 
 fun AVLInsert (k, x, Lf) = Br( (k, 1, x), Lf, Lf )
   | AVLInsert (k, x, Br((k1, h1, x1), ltree, rtree)) =
@@ -110,9 +229,47 @@ fun AVLInsert (k, x, Lf) = Br( (k, 1, x), Lf, Lf )
 		      RotateRightLeft(newtree)
       end
 		else
-			Br((k1, h1, x), ltree, rtree); (* Just replace the contents *)
+			Br((k1, h1, x), ltree, rtree); (* Just replace the contents *) */
 
-fun SimpleBalance Lf = Lf
+BINARY_TREE_NODE_TYPE * avlTreeInsert(char * key, BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return createBinaryTreeNode(key, createBinaryTreeLeaf(), createBinaryTreeLeaf());
+	}
+
+	char * key1 = getKeyInBinaryTree(node);
+	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
+	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
+
+	if (isKeyLessThan(key, key1)) {
+		BINARY_TREE_NODE_TYPE * newltree = avlTreeInsert(key, ltree);
+		BINARY_TREE_NODE_TYPE * newtree = createBinaryTreeNode(key1, newltree, rtree);
+
+		if (treeHeight(newltree) <= treeHeight(rtree) + 1) {
+			return newtree;
+		} else if (isKeyLessThan(key, getKeyInBinaryTree(newltree))) {
+			return rotateRight(newtree);
+		} else {
+			return rotateLeftRight(newtree);
+		}
+	} else if (isKeyLessThan(key1, key)) {
+		BINARY_TREE_NODE_TYPE * newrtree = avlTreeInsert(key, rtree);
+		BINARY_TREE_NODE_TYPE * newtree = createBinaryTreeNode(key1, ltree, newrtree);
+
+		if (treeHeight(newrtree) <= treeHeight(ltree) + 1) {
+			return newtree;
+		} else if (isKeyLessThan(getKeyInBinaryTree(newrtree), key)) {
+			return rotateLeft(newtree);
+		} else {
+			return rotateRightLeft(newtree);
+		}
+	} else {
+		/* Just replace the contents */
+		return createBinaryTreeNode(key1, ltree, rtree);
+	}
+}
+
+/* fun SimpleBalance Lf = Lf
   | SimpleBalance (Br((k,h,x),ltree,rtree)) =
 		let
       val tree = Br((k,h,x),ltree,rtree)
@@ -156,5 +313,34 @@ fun AVLVerifyTree( Lf ) = true
       AVLVerifyTree( ltree ) andalso AVLVerifyTree( rtree )
 		end
  */
+
+void avlTreeInOrderTraversal(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return;
+	}
+
+	avlTreeInOrderTraversal(getLeftSubtree(node));
+	printf("Key: '%s'\n", getKeyInBinaryTree(node));
+	avlTreeInOrderTraversal(getRightSubtree(node));
+}
+
+BOOL isKeyInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return FALSE;
+	}
+
+	/* Binary search */
+	const int comparison = strcmp(key, getKeyInBinaryTree(node));
+
+	if (comparison < 0) {
+		return isKeyInAvlTree(key, getLeftSubtree(node));
+	} else if (comparison > 0) {
+		return isKeyInAvlTree(key, getRightSubtree(node));
+	} else {
+		return TRUE;
+	}
+}
 
 /* **** The End **** */

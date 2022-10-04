@@ -41,10 +41,17 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 #define PROLOG_NAME_LIST_ELEMENT PROLOG_UNIVERSAL_TYPE
 #define PROLOG_NAME_VALUE_LIST_ELEMENT PROLOG_UNIVERSAL_TYPE
 #define PROLOG_VARIABLE PROLOG_UNIVERSAL_TYPE
+
+#define BINARY_TREE_NODE_TYPE PROLOG_UNIVERSAL_TYPE
 #define STRING_BUILDER_TYPE PROLOG_UNIVERSAL_TYPE
 
 /* Substitution = associative array? */
 #define PROLOG_SUBSTITUTION PROLOG_NAME_VALUE_LIST_ELEMENT
+
+#define getKeyInBinaryTree(bt) ((bt)->name)
+/* #define getKeyInBinaryTree(bt) ? */
+#define getLeftSubtree(bt) ((bt)->value1)
+#define getRightSubtree(bt) ((bt)->value2)
 
 #define getHeadInClause(c) ((c)->value1)
 #define getTailInClause(c) ((c)->value2)
@@ -77,6 +84,7 @@ enum {
 	prologType_StringBuilder,
 	prologType_Null,
 	prologType_CutReturn,
+	prologType_BinaryTreeNode,
 
 	prologType_ClauseListElement,
 	prologType_ExpressionListElement,

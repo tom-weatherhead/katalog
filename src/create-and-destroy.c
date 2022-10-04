@@ -276,4 +276,16 @@ PROLOG_UNIVERSAL_TYPE * createCutReturn(int cutReturnNumber) {
 	);
 }
 
+BINARY_TREE_NODE_TYPE * createBinaryTreeNode(char * key, BINARY_TREE_NODE_TYPE * ltree, BINARY_TREE_NODE_TYPE * rtree) {
+	return allocateStringAndCreateUniversalStruct(
+		prologType_BinaryTreeNode,
+		0,
+		0,
+		key,
+		ltree,
+		rtree,
+		NULL
+	);
+}
+
 /* **** The End **** */
