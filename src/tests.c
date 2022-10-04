@@ -6,6 +6,7 @@
 
 #include "types.h"
 
+#include "avl-tree.h"
 #include "char-source.h"
 #include "create-and-destroy.h"
 #include "evaluate.h"
@@ -16,7 +17,7 @@
 
 /* Functions */
 
-PROLOG_INPUT * processInput(char * str) {
+static PROLOG_INPUT * processInput(char * str) {
 	CharSource * cs = createCharSource(str);
 	PROLOG_INPUT * parseTree = parseInput(cs);
 
@@ -99,6 +100,22 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 	}
 }
 
+static void avlTreeTest() {
+	BINARY_TREE_NODE_TYPE * tree = NULL;
+
+	tree = avlTreeInsert("b", tree);
+	tree = avlTreeInsert("j", tree);
+	tree = avlTreeInsert("g", tree);
+	tree = avlTreeInsert("a", tree);
+	tree = avlTreeInsert("e", tree);
+	tree = avlTreeInsert("f", tree);
+	tree = avlTreeInsert("i", tree);
+	tree = avlTreeInsert("c", tree);
+	tree = avlTreeInsert("h", tree);
+	tree = avlTreeInsert("d", tree);
+
+	avlTreeInOrderTraversal(tree);
+}
 
 void runTests() {
 	printf("\nRunning tests...\n");
@@ -231,6 +248,8 @@ void runTests() {
 	};
 
 	multitest(inputsBasicCut4, expectedResultsBasicCut4);
+
+	avlTreeTest();
 
 	printf("\nDone.\n");
 }
