@@ -366,4 +366,13 @@ PROLOG_UNIVERSAL_TYPE * lookupValueInAvlTree(char * key, BINARY_TREE_NODE_TYPE *
 	}
 }
 
+int getAvlTreePopulation(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return 0;
+	}
+
+	return getAvlTreePopulation(getLeftSubtree(node)) + getAvlTreePopulation(getRightSubtree(node)) + 1;
+}
+
 /* **** The End **** */

@@ -11,4 +11,6 @@ void avlTreeInOrderTraversal(BINARY_TREE_NODE_TYPE * node);
 BOOL isKeyInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node);
 PROLOG_UNIVERSAL_TYPE * lookupValueInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node, PROLOG_UNIVERSAL_TYPE * defaultValue);
 
+int getAvlTreePopulation(BINARY_TREE_NODE_TYPE * node);
+
 /* **** The End **** */
