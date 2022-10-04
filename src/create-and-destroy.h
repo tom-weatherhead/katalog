@@ -2,7 +2,7 @@
 
 /* Create values */
 
-BINARY_TREE_NODE_TYPE * createBinaryTreeNode(char * key, BINARY_TREE_NODE_TYPE * ltree, BINARY_TREE_NODE_TYPE * rtree);
+BINARY_TREE_NODE_TYPE * createBinaryTreeNode(char * key, /* PROLOG_UNIVERSAL_TYPE * value, */ BINARY_TREE_NODE_TYPE * ltree, BINARY_TREE_NODE_TYPE * rtree);
 PROLOG_CLAUSE * createClause(PROLOG_GOAL * head, PROLOG_GOAL_LIST_ELEMENT * tail);
 PROLOG_CLAUSE_LIST_ELEMENT * createClauseListElement(PROLOG_CLAUSE * clause, PROLOG_CLAUSE_LIST_ELEMENT * next);
 PROLOG_UNIVERSAL_TYPE * createCutReturn(int cutReturnNumber);

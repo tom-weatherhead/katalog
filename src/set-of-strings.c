@@ -102,6 +102,21 @@ static int treeHeight(BINARY_TREE_NODE_TYPE * node) {
 	return ((lheight > rheight) ? lheight : rheight) + 1;
 }
 
+int calculateTreeHeightAndVerifyBalance(BINARY_TREE_NODE_TYPE * node) {
+
+	if (isBinaryTreeLeaf(node)) {
+		return 0;
+	}
+
+	const int lheight = calculateTreeHeightAndVerifyBalance(getLeftSubtree(node));
+	const int rheight = calculateTreeHeightAndVerifyBalance(getRightSubtree(node));
+	const int balance = abs(lheight - rheight);
+
+	failIf(balance > 1, "calculateTreeHeightAndVerifyBalance() : AVL tree is not balanced");
+
+	return ((lheight > rheight) ? lheight : rheight) + 1;
+}
+
 /*   A            B
  *  / \          / \
  * a   B   ->   A   c

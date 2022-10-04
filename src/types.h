@@ -49,9 +49,9 @@ typedef struct PROLOG_UNIVERSAL_STRUCT {
 #define PROLOG_SUBSTITUTION PROLOG_NAME_VALUE_LIST_ELEMENT
 
 #define getKeyInBinaryTree(bt) ((bt)->name)
-/* #define getKeyInBinaryTree(bt) ? */
 #define getLeftSubtree(bt) ((bt)->value1)
-#define getRightSubtree(bt) ((bt)->value2)
+#define getValueInBinaryTree(bt) ((bt)->value2) /* For when the binary tree is used as a dictionary */
+#define getRightSubtree(bt) ((bt)->next)
 
 #define getHeadInClause(c) ((c)->value1)
 #define getTailInClause(c) ((c)->value2)
