@@ -286,16 +286,19 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 	}
 
 	char * key = getKeyInBinaryTree(node);
-	const int lh = treeHeight(getLeftSubtree(node));
-	const int rh = treeHeight(getRightSubtree(node));
+	PROLOG_UNIVERSAL_TYPE * value = getValueInBinaryTree(node);
+	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
+	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
+	const int lh = treeHeight(ltree);
+	const int rh = treeHeight(rtree);
 
 	if (lh > rh + 1) {
 		/* ThAW 2022-10-04 BEGIN INSERT 1 */
-		const int llh = treeHeight(getLeftSubtree(getLeftSubtree(node)));
-		const int rlh = treeHeight(getRightSubtree(getLeftSubtree(node)));
+		const int llh = treeHeight(getLeftSubtree(ltree));
+		const int rlh = treeHeight(getRightSubtree(ltree));
 
 		if (llh < rlh) {
-			node = createBinaryTreeNode(key, getValueInBinaryTree(node), rotateLeft(getLeftSubtree(node)), getRightSubtree(node));
+			node = createBinaryTreeNode(key, value, rotateLeft(ltree), rtree);
 		}
 		/* ThAW 2022-10-04 END INSERT 1 */
 
@@ -308,11 +311,11 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 		treeHeight(getLeftSubtree(getRightSubtree(node))) == n + 2
 		treeHeight(getRightSubtree(getRightSubtree(node))) == n + 1
 		*/
-		const int lrh = treeHeight(getLeftSubtree(getRightSubtree(node)));
-		const int rrh = treeHeight(getRightSubtree(getRightSubtree(node)));
+		const int lrh = treeHeight(getLeftSubtree(rtree));
+		const int rrh = treeHeight(getRightSubtree(rtree));
 
 		if (lrh > rrh) {
-			node = createBinaryTreeNode(key, getValueInBinaryTree(node), getLeftSubtree(node), rotateRight(getRightSubtree(node)));
+			node = createBinaryTreeNode(key, value, ltree, rotateRight(rtree));
 		}
 		/* ThAW 2022-10-04 END INSERT 2 */
 
