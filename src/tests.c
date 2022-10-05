@@ -100,6 +100,53 @@ static void multitest(char * inputs[], char * expectedOutputs[]) {
 	}
 }
 
+static void randomizeAlphabet(char * buf) {
+	int i;
+
+	for (i = 0; i < 26; ++i) {
+		buf[i] = i + 'A';
+	}
+
+	/* We assume that srand(time(NULL)); has already been called */
+
+	for (i = 0; i < 26; ++i) {
+		const int j = rand() % 26;
+		const char c = buf[i];
+
+		buf[i] = buf[j];
+		buf[j] = c;
+	}
+}
+
+static void avlTreeRandomizedAlphabetInsertDeleteTest() {
+	BINARY_TREE_NODE_TYPE * tree = NULL;
+	char buf[26];
+	char key[2];
+	int i;
+
+	key[1] = '\0';
+
+	printf("avlTree: Inserting randomized alphabet...\n");
+
+	randomizeAlphabet(buf);
+
+	for (i = 0; i < 26; ++i) {
+		key[0] = buf[i];
+		printf("  avlTree: Inserting key '%s'\n", key);
+		tree = avlTreeInsertKey(key, tree);
+	}
+
+	printf("avlTree: Deleting randomized alphabet...\n");
+
+	randomizeAlphabet(buf);
+
+	for (i = 0; i < 26; ++i) {
+		key[0] = buf[i];
+		printf("  avlTree: Deleting key '%s'\n", key);
+		tree = avlTreeDelete(key, tree);
+	}
+}
+
 static void avlTreeTest() {
 	BINARY_TREE_NODE_TYPE * tree = NULL;
 
@@ -150,6 +197,8 @@ static void avlTreeTest() {
 	} else {
 		printExpression(valueG);
 	}
+
+	avlTreeRandomizedAlphabetInsertDeleteTest();
 }
 
 void runTests() {

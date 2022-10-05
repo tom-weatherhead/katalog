@@ -81,7 +81,7 @@ static void avlTreeInOrderTraversalWithDepths(BINARY_TREE_NODE_TYPE * node, int 
 		valueAsString = sb->name;
 	}
 
-	printf("Depth %d : Key: '%s' -> Value: '%s'\n", depth, getKeyInBinaryTree(node), valueAsString);
+	/* printf("Depth %d : Key: '%s' -> Value: '%s'\n", depth, getKeyInBinaryTree(node), valueAsString); */
 
 	avlTreeInOrderTraversalWithDepths(getRightSubtree(node), depth + 1);
 }
@@ -98,7 +98,7 @@ static int treeHeight(BINARY_TREE_NODE_TYPE * node) {
 	return ((lheight > rheight) ? lheight : rheight) + 1;
 }
 
-static int calculateTreeHeightAndVerifyBalance(BINARY_TREE_NODE_TYPE * node, char * failMsg) {
+static int calculateTreeHeightAndVerifyBalance(BINARY_TREE_NODE_TYPE * node, int depth, char * failMsg) {
 
 	if (isBinaryTreeLeaf(node)) {
 		return 0;
@@ -108,12 +108,12 @@ static int calculateTreeHeightAndVerifyBalance(BINARY_TREE_NODE_TYPE * node, cha
 		failMsg = "calculateTreeHeightAndVerifyBalance() : AVL tree is not balanced";
 	}
 
-	const int lheight = calculateTreeHeightAndVerifyBalance(getLeftSubtree(node), failMsg);
-	const int rheight = calculateTreeHeightAndVerifyBalance(getRightSubtree(node), failMsg);
+	const int lheight = calculateTreeHeightAndVerifyBalance(getLeftSubtree(node), depth + 1, failMsg);
+	const int rheight = calculateTreeHeightAndVerifyBalance(getRightSubtree(node), depth + 1, failMsg);
 	const int balance = abs(lheight - rheight);
 
 	if (balance > 1) {
-		fprintf(stderr, "calculateTreeHeightAndVerifyBalance: lheight = %d; rheight = %d\n", lheight, rheight);
+		fprintf(stderr, "calculateTreeHeightAndVerifyBalance: Imbalance at depth %d: lheight = %d; rheight = %d\n", depth, lheight, rheight);
 	}
 
 	failIf(balance > 1, failMsg);
@@ -137,7 +137,7 @@ fun RotateLeft Lf = Lf
 		NewNode(k2,x2,NewNode(k1,x1,ltree,rltree),rrtree); */
 
 static BINARY_TREE_NODE_TYPE * rotateLeft(BINARY_TREE_NODE_TYPE * node) {
-	printf("rotateLeft\n");
+	/* printf("rotateLeft\n"); */
 
 	if (isBinaryTreeLeaf(node)) {
 		return createBinaryTreeLeaf();
@@ -172,7 +172,7 @@ fun RotateRight Lf = Lf
 		NewNode(k2,x2,lltree,NewNode(k1,x1,lrtree,rtree)); */
 
 static BINARY_TREE_NODE_TYPE * rotateRight(BINARY_TREE_NODE_TYPE * node) {
-	printf("rotateRight\n");
+	/* printf("rotateRight\n"); */
 
 	if (isBinaryTreeLeaf(node)) {
 		return createBinaryTreeLeaf();
@@ -200,7 +200,7 @@ static BINARY_TREE_NODE_TYPE * rotateRight(BINARY_TREE_NODE_TYPE * node) {
 		RotateLeft(NewNode(k,x,ltree,RotateRight(rtree))); */
 
 static BINARY_TREE_NODE_TYPE * rotateRightLeft(BINARY_TREE_NODE_TYPE * node) {
-	printf("rotateRightLeft\n");
+	/* printf("rotateRightLeft\n"); */
 
 	if (isBinaryTreeLeaf(node)) {
 		return createBinaryTreeLeaf();
@@ -219,7 +219,7 @@ static BINARY_TREE_NODE_TYPE * rotateRightLeft(BINARY_TREE_NODE_TYPE * node) {
 		RotateRight(NewNode(k,x,RotateLeft(ltree),rtree)); */
 
 static BINARY_TREE_NODE_TYPE * rotateLeftRight(BINARY_TREE_NODE_TYPE * node) {
-	printf("rotateLeftRight\n");
+	/* printf("rotateLeftRight\n"); */
 
 	if (isBinaryTreeLeaf(node)) {
 		return createBinaryTreeLeaf();
@@ -304,23 +304,23 @@ static BINARY_TREE_NODE_TYPE * avlTreeInsertHelper(char * key, PROLOG_UNIVERSAL_
 }
 
 BINARY_TREE_NODE_TYPE * avlTreeInsertKey(char * key, BINARY_TREE_NODE_TYPE * node) {
-	calculateTreeHeightAndVerifyBalance(node, "AVL pre-Insert key: Balance check failed");
+	calculateTreeHeightAndVerifyBalance(node, 0, "AVL pre-Insert key: Balance check failed");
 
 	BINARY_TREE_NODE_TYPE * result = avlTreeInsertHelper(key, NULL, node);
 
-	const int height = calculateTreeHeightAndVerifyBalance(result, "AVL post-Insert key: Balance check failed");
+	const int height = calculateTreeHeightAndVerifyBalance(result, 0, "AVL post-Insert key: Balance check failed");
 
-	printf("Insert key '%s': Tree height is now %d\n", key, height);
+	/* printf("Insert key '%s': Tree height is now %d\n", key, height); */
 
 	return result;
 }
 
 BINARY_TREE_NODE_TYPE * avlTreeInsertKeyAndValue(char * key, PROLOG_UNIVERSAL_TYPE * value, BINARY_TREE_NODE_TYPE * node) {
-	calculateTreeHeightAndVerifyBalance(node, "AVL pre-Insert key and value: Balance check failed");
+	calculateTreeHeightAndVerifyBalance(node, 0, "AVL pre-Insert key and value: Balance check failed");
 
 	BINARY_TREE_NODE_TYPE * result = avlTreeInsertHelper(key, value, node);
 
-	const int height = calculateTreeHeightAndVerifyBalance(result, "AVL post-Insert key and value: Balance check failed");
+	const int height = calculateTreeHeightAndVerifyBalance(result, 0, "AVL post-Insert key and value: Balance check failed");
 
 	printf("Insert key '%s' and value: Tree height is now %d\n", key, height);
 
@@ -352,7 +352,7 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 	const int lh = treeHeight(getLeftSubtree(node));
 	const int rh = treeHeight(getRightSubtree(node));
 
-	fprintf(stderr, "simpleBalance: key = '%s'; lheight = %d; rheight = %d\n", key, lh, rh);
+	/* fprintf(stderr, "simpleBalance: key = '%s'; lheight = %d; rheight = %d\n", key, lh, rh); */
 
 	if (lh > rh + 1) {
 		/* ThAW 2022-10-04 BEGIN INSERT 1 */
@@ -405,102 +405,108 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 static BINARY_TREE_NODE_TYPE * avlTreeDeleteHelper(char * key, BINARY_TREE_NODE_TYPE * node) {
 
 	if (isBinaryTreeLeaf(node)) {
-		fprintf(stderr, "avlTreeDeleteHelper: Leaf\n");
+		/* fprintf(stderr, "avlTreeDeleteHelper: Leaf\n"); */
 		return createBinaryTreeLeaf();
 	}
+
+	BINARY_TREE_NODE_TYPE * result = NULL;
 
 	char * key1 = getKeyInBinaryTree(node);
 	PROLOG_UNIVERSAL_TYPE * value1 = getValueInBinaryTree(node);
 	BINARY_TREE_NODE_TYPE * ltree = getLeftSubtree(node);
 	BINARY_TREE_NODE_TYPE * rtree = getRightSubtree(node);
 
-	const int lheight = calculateTreeHeightAndVerifyBalance(ltree, NULL);
-	const int rheight = calculateTreeHeightAndVerifyBalance(rtree, NULL);
-	/* const int balance = abs(lheight - rheight); */
+	/* const int lheight = calculateTreeHeightAndVerifyBalance(ltree, 0, "Calculating lheight inside avlTreeDeleteHelper");
+	const int rheight = calculateTreeHeightAndVerifyBalance(rtree, 0, "Calculating rheight inside avlTreeDeleteHelper");
+	const int balance = abs(lheight - rheight); */
 
-	fprintf(stderr, "avlTreeDeleteHelper: lheight = %d; rheight = %d\n", lheight, rheight);
+	/* fprintf(stderr, "avlTreeDeleteHelper: lheight = %d; rheight = %d\n", lheight, rheight); */
 
 	if (isKeyLessThan(key, key1)) {
-		fprintf(stderr, "avlTreeDeleteHelper: Case 1; key = '%s'; key1 = '%s'\n", key, key1);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 1; key = '%s'; key1 = '%s'\n", key, key1);
 
 		fprintf(stderr, "avlTreeDeleteHelper: Case 1: Before\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
 		node = createBinaryTreeNode(key1, value1, avlTreeDeleteHelper(key, ltree), rtree);
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 1: New node\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 1: New node\n");
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
 		node = simpleBalance(node);
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 1: After simpleBalance\n");
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 1: After simpleBalance\n");
 		avlTreeInOrderTraversalWithDepths(node, 0);
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 1: End\n");
+		fprintf(stderr, "avlTreeDeleteHelper: Case 1: End\n"); */
 
-		return node;
+		result = node;
 	} else if (isKeyLessThan(key1, key)) {
-		fprintf(stderr, "avlTreeDeleteHelper: Case 2; key = '%s'; key1 = '%s'\n", key, key1);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 2; key = '%s'; key1 = '%s'\n", key, key1); */
 		/* return simpleBalance(createBinaryTreeNode(key1, value1, ltree, avlTreeDeleteHelper(key, rtree))); */
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 2: Before\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 2: Before\n");
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
 		node = createBinaryTreeNode(key1, value1, ltree, avlTreeDeleteHelper(key, rtree));
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 2: New node\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 2: New node\n");
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
 		node = simpleBalance(node);
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 2: After simpleBalance\n");
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 2: After simpleBalance\n");
 		avlTreeInOrderTraversalWithDepths(node, 0);
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 2: End\n");
+		fprintf(stderr, "avlTreeDeleteHelper: Case 2: End\n"); */
 
-		return node;
+		result = node;
 	} else if (isBinaryTreeLeaf(ltree)) {
-		fprintf(stderr, "avlTreeDeleteHelper: Case 3\n");
-		return rtree;
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 3\n"); */
+		result = rtree;
 	} else if (isBinaryTreeLeaf(rtree)) {
-		fprintf(stderr, "avlTreeDeleteHelper: Case 4\n");
-		return ltree;
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 4\n"); */
+		result = ltree;
 	} else if (treeHeight(ltree) < treeHeight(rtree)) {
 		/* fprintf(stderr, "avlTreeDeleteHelper: Case 5\n");
-		return avlTreeDeleteHelper(key, rotateLeft(node)); */
+		return avlTreeDeleteHelper(key, rotateLeft(node));
 
 		fprintf(stderr, "avlTreeDeleteHelper: Case 5: Before rotateLeft\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
 		node = rotateLeft(node);
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 5: After rotateLeft\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 5: After rotateLeft\n");
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
-		return avlTreeDeleteHelper(key, node);
+		result = avlTreeDeleteHelper(key, node);
 	} else {
-		fprintf(stderr, "avlTreeDeleteHelper: Case 6: Before rotateRight\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 6: Before rotateRight\n");
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
 		node = rotateRight(node);
 
-		fprintf(stderr, "avlTreeDeleteHelper: Case 6: After rotateRight\n");
-		avlTreeInOrderTraversalWithDepths(node, 0);
+		/* fprintf(stderr, "avlTreeDeleteHelper: Case 6: After rotateRight\n");
+		avlTreeInOrderTraversalWithDepths(node, 0); */
 
-		return avlTreeDeleteHelper(key, node);
+		result = avlTreeDeleteHelper(key, node);
 	}
+
+	return result;
+
+	/* return simpleBalance(result); */
 }
 
 BINARY_TREE_NODE_TYPE * avlTreeDelete(char * key, BINARY_TREE_NODE_TYPE * node) {
 	printf("\nDeleting key '%s'...\n", key);
 
-	calculateTreeHeightAndVerifyBalance(node, "AVL pre-Delete: Balance check failed");
+	calculateTreeHeightAndVerifyBalance(node, 0, "AVL pre-Delete: Balance check failed");
 
 	BINARY_TREE_NODE_TYPE * result = avlTreeDeleteHelper(key, node);
 
-	avlTreeInOrderTraversalWithDepths(result, 0);
+	/* avlTreeInOrderTraversalWithDepths(result, 0); */
 
-	const int height = calculateTreeHeightAndVerifyBalance(result, "AVL post-Delete: Balance check failed");
+	const int height = calculateTreeHeightAndVerifyBalance(result, 0, "AVL post-Delete: Balance check failed");
 
 	printf("Delete key '%s': Tree height is now %d\n", key, height);
 
