@@ -129,7 +129,21 @@ static void avlTreeTest() {
 
 	PROLOG_UNIVERSAL_TYPE * valueG = lookupValueInAvlTree("g", tree, NULL);
 
-	printf("Lookup 'g' -> ");
+	printf("Lookup 'g' (1) -> ");
+
+	if (valueG == NULL) {
+		printf("NULL\n");
+	} else {
+		printExpression(valueG);
+	}
+
+	tree = avlTreeDelete("e", tree);
+	tree = avlTreeDelete("q", tree);
+	tree = avlTreeDelete("g", tree);
+
+	valueG = lookupValueInAvlTree("g", tree, NULL);
+
+	printf("Lookup 'g' (2) -> ");
 
 	if (valueG == NULL) {
 		printf("NULL\n");

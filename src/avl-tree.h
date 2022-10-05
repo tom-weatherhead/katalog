@@ -6,6 +6,8 @@ typedef AVL_TREE_VALUE_TYPE ?; */
 BINARY_TREE_NODE_TYPE * avlTreeInsertKey(char * key, BINARY_TREE_NODE_TYPE * node);
 BINARY_TREE_NODE_TYPE * avlTreeInsertKeyAndValue(char * key, PROLOG_UNIVERSAL_TYPE * value, BINARY_TREE_NODE_TYPE * node);
 
+BINARY_TREE_NODE_TYPE * avlTreeDelete(char * key, BINARY_TREE_NODE_TYPE * node);
+
 void avlTreeInOrderTraversal(BINARY_TREE_NODE_TYPE * node);
 
 BOOL isKeyInAvlTree(char * key, BINARY_TREE_NODE_TYPE * node);
