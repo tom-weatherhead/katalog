@@ -277,9 +277,13 @@ PROLOG_UNIVERSAL_TYPE * createCutReturn(int cutReturnNumber) {
 }
 
 BINARY_TREE_NODE_TYPE * createBinaryTreeNode(char * key, PROLOG_UNIVERSAL_TYPE * value, BINARY_TREE_NODE_TYPE * ltree, BINARY_TREE_NODE_TYPE * rtree) {
+	const int lheight = (ltree == NULL) ? 0 : getHeightInBinaryTree(ltree);
+	const int rheight = (rtree == NULL) ? 0 : getHeightInBinaryTree(rtree);
+	const int height = ((lheight > rheight) ? lheight : rheight) + 1;
+
 	return allocateStringAndCreateUniversalStruct(
 		prologType_BinaryTreeNode,
-		0,
+		height,
 		0,
 		key,
 		ltree,
