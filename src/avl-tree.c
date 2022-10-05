@@ -64,7 +64,7 @@ static BOOL isBinaryTreeLeaf(BINARY_TREE_NODE_TYPE * node) {
 	return node == NULL;
 }
 
-static void avlTreeInOrderTraversalWithDepths(BINARY_TREE_NODE_TYPE * node, int depth) {
+/* static void avlTreeInOrderTraversalWithDepths(BINARY_TREE_NODE_TYPE * node, int depth) {
 
 	if (isBinaryTreeLeaf(node)) {
 		return;
@@ -81,10 +81,10 @@ static void avlTreeInOrderTraversalWithDepths(BINARY_TREE_NODE_TYPE * node, int 
 		valueAsString = sb->name;
 	}
 
-	/* printf("Depth %d : Key: '%s' -> Value: '%s'\n", depth, getKeyInBinaryTree(node), valueAsString); */
+	/ * printf("Depth %d : Key: '%s' -> Value: '%s'\n", depth, getKeyInBinaryTree(node), valueAsString); * /
 
 	avlTreeInOrderTraversalWithDepths(getRightSubtree(node), depth + 1);
-}
+} */
 
 static int treeHeight(BINARY_TREE_NODE_TYPE * node) {
 
@@ -308,7 +308,7 @@ BINARY_TREE_NODE_TYPE * avlTreeInsertKey(char * key, BINARY_TREE_NODE_TYPE * nod
 
 	BINARY_TREE_NODE_TYPE * result = avlTreeInsertHelper(key, NULL, node);
 
-	const int height = calculateTreeHeightAndVerifyBalance(result, 0, "AVL post-Insert key: Balance check failed");
+	/* const int height = */ calculateTreeHeightAndVerifyBalance(result, 0, "AVL post-Insert key: Balance check failed");
 
 	/* printf("Insert key '%s': Tree height is now %d\n", key, height); */
 
@@ -355,14 +355,14 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 	/* fprintf(stderr, "simpleBalance: key = '%s'; lheight = %d; rheight = %d\n", key, lh, rh); */
 
 	if (lh > rh + 1) {
-		/* ThAW 2022-10-04 BEGIN INSERT 1 * /
+		/* ThAW 2022-10-04 BEGIN INSERT 1 */
 		const int llh = treeHeight(getLeftSubtree(getLeftSubtree(node)));
 		const int rlh = treeHeight(getRightSubtree(getLeftSubtree(node)));
 
 		if (llh < rlh) {
 			node = createBinaryTreeNode(key, getValueInBinaryTree(node), rotateLeft(getLeftSubtree(node)), getRightSubtree(node));
 		}
-		/ * ThAW 2022-10-04 END INSERT 1 */
+		/* ThAW 2022-10-04 END INSERT 1 */
 
 		return rotateRight(node);
 	} else if (rh > lh + 1) {
@@ -372,14 +372,14 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 		treeHeight(getLeftSubtree(node)) == n
 		treeHeight(getLeftSubtree(getRightSubtree(node))) == n + 2
 		treeHeight(getRightSubtree(getRightSubtree(node))) == n + 1
-		* /
+		*/
 		const int lrh = treeHeight(getLeftSubtree(getRightSubtree(node)));
 		const int rrh = treeHeight(getRightSubtree(getRightSubtree(node)));
 
 		if (lrh > rrh) {
 			node = createBinaryTreeNode(key, getValueInBinaryTree(node), getLeftSubtree(node), rotateRight(getRightSubtree(node)));
 		}
-		/ * ThAW 2022-10-04 END INSERT 2 */
+		/* ThAW 2022-10-04 END INSERT 2 */
 
 		return rotateLeft(node);
 	} else {
