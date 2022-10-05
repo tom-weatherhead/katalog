@@ -355,14 +355,14 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 	/* fprintf(stderr, "simpleBalance: key = '%s'; lheight = %d; rheight = %d\n", key, lh, rh); */
 
 	if (lh > rh + 1) {
-		/* ThAW 2022-10-04 BEGIN INSERT 1 */
+		/* ThAW 2022-10-04 BEGIN INSERT 1 * /
 		const int llh = treeHeight(getLeftSubtree(getLeftSubtree(node)));
 		const int rlh = treeHeight(getRightSubtree(getLeftSubtree(node)));
 
 		if (llh < rlh) {
 			node = createBinaryTreeNode(key, getValueInBinaryTree(node), rotateLeft(getLeftSubtree(node)), getRightSubtree(node));
 		}
-		/* ThAW 2022-10-04 END INSERT 1 */
+		/ * ThAW 2022-10-04 END INSERT 1 */
 
 		return rotateRight(node);
 	} else if (rh > lh + 1) {
@@ -372,14 +372,14 @@ static BINARY_TREE_NODE_TYPE * simpleBalance(BINARY_TREE_NODE_TYPE * node) {
 		treeHeight(getLeftSubtree(node)) == n
 		treeHeight(getLeftSubtree(getRightSubtree(node))) == n + 2
 		treeHeight(getRightSubtree(getRightSubtree(node))) == n + 1
-		*/
+		* /
 		const int lrh = treeHeight(getLeftSubtree(getRightSubtree(node)));
 		const int rrh = treeHeight(getRightSubtree(getRightSubtree(node)));
 
 		if (lrh > rrh) {
 			node = createBinaryTreeNode(key, getValueInBinaryTree(node), getLeftSubtree(node), rotateRight(getRightSubtree(node)));
 		}
-		/* ThAW 2022-10-04 END INSERT 2 */
+		/ * ThAW 2022-10-04 END INSERT 2 */
 
 		return rotateLeft(node);
 	} else {
