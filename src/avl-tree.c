@@ -32,10 +32,12 @@ static int treeHeight(BINARY_TREE_NODE_TYPE * node) {
 		return 0;
 	}
 
-	const int lheight = treeHeight(getLeftSubtree(node));
+	/* const int lheight = treeHeight(getLeftSubtree(node));
 	const int rheight = treeHeight(getRightSubtree(node));
 
-	return ((lheight > rheight) ? lheight : rheight) + 1;
+	return ((lheight > rheight) ? lheight : rheight) + 1; */
+
+	return getHeightInBinaryTree(node);
 }
 
 static int calculateTreeHeightAndVerifyBalance(BINARY_TREE_NODE_TYPE * node, int depth, char * failMsg) {
