@@ -367,7 +367,7 @@ static BINARY_TREE_NODE_TYPE * avlTreeDeleteHelper(char * key, BINARY_TREE_NODE_
 }
 
 BINARY_TREE_NODE_TYPE * avlTreeDelete(char * key, BINARY_TREE_NODE_TYPE * node) {
-	printf("\nDeleting key '%s'...\n", key);
+	/* printf("\nDeleting key '%s'...\n", key); */
 
 	calculateTreeHeightAndVerifyBalance(node, 0, "AVL pre-Delete: Balance check failed");
 

@@ -147,6 +147,64 @@ static void avlTreeRandomizedAlphabetInsertDeleteTest() {
 	}
 }
 
+static void avlTreeStressTest() {
+	const int numKeys = 10000;
+
+	printf("\navlTree: Massive (%d) stress test...\n", numKeys);
+
+	/* Insert ten thousand keys (the strings "0000" through "9999")
+	in a random order, then delete all of them in a random order. */
+
+	BINARY_TREE_NODE_TYPE * tree = NULL;
+	int * aaa = (int *)malloc(numKeys * sizeof(int));
+	int i;
+	char key[8];
+
+	/* Inserts */
+
+	for (i = 0; i < numKeys; ++i) {
+		aaa[i] = i;
+	}
+
+	/* Randomize. */
+
+	for (i = 0; i < numKeys; ++i) {
+		const int j = rand() % numKeys;
+		const int n = aaa[i];
+
+		aaa[i] = aaa[j];
+		aaa[j] = n;
+	}
+
+	for (i = 0; i < numKeys; ++i) {
+		sprintf(key, "%04d", aaa[i]);
+		tree = avlTreeInsertKey(key, tree);
+	}
+
+	/* Deletes */
+
+	for (i = 0; i < numKeys; ++i) {
+		aaa[i] = i;
+	}
+
+	/* Randomize. */
+
+	for (i = 0; i < numKeys; ++i) {
+		const int j = rand() % numKeys;
+		const int n = aaa[i];
+
+		aaa[i] = aaa[j];
+		aaa[j] = n;
+	}
+
+	for (i = 0; i < numKeys; ++i) {
+		sprintf(key, "%04d", aaa[i]);
+		tree = avlTreeDelete(key, tree);
+	}
+
+	free(aaa);
+}
+
 static void avlTreeTest() {
 	BINARY_TREE_NODE_TYPE * tree = NULL;
 
@@ -199,6 +257,8 @@ static void avlTreeTest() {
 	}
 
 	avlTreeRandomizedAlphabetInsertDeleteTest();
+
+	avlTreeStressTest();
 }
 
 void runTests() {
