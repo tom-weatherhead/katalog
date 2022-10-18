@@ -1,6 +1,7 @@
 /* katalog/src/substitution.c */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "types.h"
@@ -37,7 +38,12 @@ BOOL substitutionContainsVariableName(PROLOG_SUBSTITUTION * this, char * name) {
 PROLOG_EXPRESSION * lookupValueInSubstitutionList(char * name, PROLOG_SUBSTITUTION * sub) {
 	PROLOG_SUBSTITUTION * ptr;
 
-	for (ptr = sub; ptr != NULL; ptr = ptr->next) {
+	for (ptr = sub; ptr != NULL && ptr->type != prologType_Null; ptr = ptr->next) {
+
+		if (ptr->type != prologType_NameValueListElement) {
+			printf("ptr->type is %d, not prologType_NameValueListElement\n", ptr->type);
+		}
+
 		failIf(ptr->type != prologType_NameValueListElement, "lookupValueInSubstitutionList() : ptr->type != prologType_NameValueListElement");
 		failIf(ptr->name == NULL, "lookupValueInSubstitutionList() : ptr->name == NULL");
 

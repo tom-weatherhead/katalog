@@ -41,21 +41,23 @@ BOOL equals(PROLOG_UNIVERSAL_TYPE * this, PROLOG_UNIVERSAL_TYPE * that) {
 }
 
 SET_OF_STRINGS * findBindingVariables(PROLOG_UNIVERSAL_TYPE * this) {
+	SET_OF_STRINGS * result = createSetOfStrings();
 
 	if (this == NULL) {
-		return NULL;
+		return result;
 	}
 
 	switch (this->type) {
 		case prologType_Integer:
-			return NULL;
+			return result;
 
 		case prologType_Variable:
 
 			if (isVariableNonBinding(this)) {
-				return NULL;
+				return result;
 			} else {
-				return createNameListElement(this->name, NULL);
+				/* return createNameListElement(this->name, NULL); */
+				return addToSetOfStrings(this->name, result);
 			}
 
 		case prologType_Functor:
@@ -84,7 +86,7 @@ SET_OF_STRINGS * findBindingVariables(PROLOG_UNIVERSAL_TYPE * this) {
 		default:
 			fprintf(stderr, "findBindingVariables() : Bad object type %d\n", this->type);
 			fatalError("findBindingVariables() : Bad object type");
-			return NULL;
+			return result;
 	}
 }
 
@@ -323,11 +325,25 @@ static PROLOG_VARIABLE * createUnusedVariable() {
 }
 
 static PROLOG_CLAUSE * renameVariablesInClause(PROLOG_CLAUSE * clause) {
-	SET_OF_STRINGS * bindingVariables = findBindingVariables(clause);
-	SET_OF_STRINGS * sub = createNull();
+	/* SET_OF_STRINGS * bindingVariables = findBindingVariables(clause);
+	PROLOG_SUBSTITUTION * sub = createNull(); */
 
-	for (; bindingVariables != NULL; bindingVariables = bindingVariables->next) {
+	/* TODO: Iterate over the strings in the set */
+
+	/* for (; bindingVariables != NULL; bindingVariables = bindingVariables->next) {
 		sub = createNameValueListElement(bindingVariables->name, createUnusedVariable(), sub);
+	} */
+
+	/* PROLOG_SUBSTITUTION * sub = createNameValueListFromSetOfStrings(findBindingVariables(clause), createNull()); */
+	PROLOG_SUBSTITUTION * sub = createNameValueListFromSetOfStrings(findBindingVariables(clause), NULL);
+	PROLOG_SUBSTITUTION * ptr;
+
+	if (sub == NULL) {
+		return clause;
+	}
+
+	for (ptr = sub; ptr != NULL /* && ptr->type != prologType_Null */; ptr = ptr->next) {
+		getValueInNameValueListElement(ptr) = createUnusedVariable();
 	}
 
 	return applySubstitution(clause, sub);
