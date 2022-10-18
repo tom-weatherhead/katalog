@@ -56,7 +56,6 @@ SET_OF_STRINGS * findBindingVariables(PROLOG_UNIVERSAL_TYPE * this) {
 			if (isVariableNonBinding(this)) {
 				return result;
 			} else {
-				/* return createNameListElement(this->name, NULL); */
 				return addToSetOfStrings(this->name, result);
 			}
 
@@ -235,60 +234,6 @@ BOOL isGround(PROLOG_UNIVERSAL_TYPE * this) {
 	}
 }
 
-/*
-C# :
-
-private ProveGoalList(
-	goalList: PrologGoal[],
-	cutDetectorList: CutDetector[],
-	goalNum: number,
-	oldSubstitution: ISubstitution,
-	parentVariablesToAvoid: IImmutableSet<IPrologVariable>,
-	variablesInQuery: IPrologVariable[], // Print these variables and their values automatically upon success if there is no print() goal at the end
-	listOfCurrentModules: PrologModule[]
-): ISubstitution | undefined {
-	if (goalNum >= goalList.length) {
-		// The goal list has been satisfied.
-
-		// console.log(
-		// 	`ProveGoalList() : The goal list of length ${goalList.length} has been satisfied`
-		// );
-		// console.log(
-		// 	'ProveGoalList() : Found solution:',
-		// 	oldSubstitution.toString()
-		// );
-		// this.printDirect(
-		// 	`ProveGoalList() : Found solution: ${oldSubstitution}`
-		// );
-
-		// **** Begin automatic printing ****
-		// const lastGoal =
-		// 	goalList.length > 0 ? goalList[goalList.length - 1] : undefined;
-
-		// if (
-		// 	typeof lastGoal !== 'undefined' &&
-		// 	lastGoal.Name !== 'print'
-		// ) {
-		// 	// Don't do automatic printing if the last goal was a print() goal.
-		this.AutomaticPrint(variablesInQuery, oldSubstitution);
-		this.numSolutionsFound++;
-		// }
-
-		// **** End automatic printing ****
-
-		// To continue searching for other solutions (i.e. if we are operating in "all" mode rather than "first" mode), return null.
-
-		if (this.allMode) {
-			return undefined;
-		}
-
-		return oldSubstitution;
-	}
-
-	...
-}
-*/
-
 void clearKnowledgeBase() {
 	knowledgeBase = NULL;
 }
@@ -325,22 +270,14 @@ static PROLOG_VARIABLE * createUnusedVariable() {
 }
 
 static PROLOG_CLAUSE * renameVariablesInClause(PROLOG_CLAUSE * clause) {
-	/* SET_OF_STRINGS * bindingVariables = findBindingVariables(clause);
-	PROLOG_SUBSTITUTION * sub = createNull(); */
+	SET_OF_STRINGS * bindingVariables = findBindingVariables(clause);
 
-	/* TODO: Iterate over the strings in the set */
-
-	/* for (; bindingVariables != NULL; bindingVariables = bindingVariables->next) {
-		sub = createNameValueListElement(bindingVariables->name, createUnusedVariable(), sub);
-	} */
-
-	/* PROLOG_SUBSTITUTION * sub = createNameValueListFromSetOfStrings(findBindingVariables(clause), createNull()); */
-	PROLOG_SUBSTITUTION * sub = createNameValueListFromSetOfStrings(findBindingVariables(clause), NULL);
-	PROLOG_SUBSTITUTION * ptr;
-
-	if (sub == NULL) {
+	if (bindingVariables == NULL) {
 		return clause;
 	}
+
+	PROLOG_SUBSTITUTION * sub = createNameValueListFromSetOfStrings(bindingVariables, NULL);
+	PROLOG_SUBSTITUTION * ptr;
 
 	for (ptr = sub; ptr != NULL /* && ptr->type != prologType_Null */; ptr = ptr->next) {
 		getValueInNameValueListElement(ptr) = createUnusedVariable();
